@@ -1,0 +1,1 @@
+g:\python27-32\python.exe extractor.py "g:\StarCraft\Maps\replays\collection\Accumulated\PvP\0007 TSLKwaKP TSLWhiteRaP.rep"
