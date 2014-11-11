@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UAlbertaBot", "UAlbertaBot.vcxproj", "{2E63AE74-758A-4607-9DE4-D28E814A6E13}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AdversarialSearch", "..\..\AdversarialSearch\VisualStudio\AdversarialSearch.vcxproj", "{E2AC42E2-950B-4D29-9B99-3A74A73FFC46}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StarcraftBuildOrderSearch", "..\..\StarcraftBuildOrderSearch\VisualStudio\StarcraftBuildOrderSearch.vcxproj", "{9F8709E3-AC4F-45F2-8105-4A99D8E2A127}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HMMLib", "..\..\hmm\HMMLib.vcxproj", "{96768F1D-0846-4AEE-85E9-0D7CA00EEE2F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +47,14 @@ Global
 		{9F8709E3-AC4F-45F2-8105-4A99D8E2A127}.Release|Win32.ActiveCfg = Release|Win32
 		{9F8709E3-AC4F-45F2-8105-4A99D8E2A127}.Release|Win32.Build.0 = Release|Win32
 		{9F8709E3-AC4F-45F2-8105-4A99D8E2A127}.Release|x64.ActiveCfg = Release|Win32
+		{96768F1D-0846-4AEE-85E9-0D7CA00EEE2F}.Debug|Itanium.ActiveCfg = Debug|Win32
+		{96768F1D-0846-4AEE-85E9-0D7CA00EEE2F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{96768F1D-0846-4AEE-85E9-0D7CA00EEE2F}.Debug|Win32.Build.0 = Debug|Win32
+		{96768F1D-0846-4AEE-85E9-0D7CA00EEE2F}.Debug|x64.ActiveCfg = Debug|Win32
+		{96768F1D-0846-4AEE-85E9-0D7CA00EEE2F}.Release|Itanium.ActiveCfg = Release|Win32
+		{96768F1D-0846-4AEE-85E9-0D7CA00EEE2F}.Release|Win32.ActiveCfg = Release|Win32
+		{96768F1D-0846-4AEE-85E9-0D7CA00EEE2F}.Release|Win32.Build.0 = Release|Win32
+		{96768F1D-0846-4AEE-85E9-0D7CA00EEE2F}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
