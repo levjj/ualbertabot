@@ -1,1 +1,14 @@
 /bo-extractor/pyreplib
+/hmm/HMMLib.vcxproj.filters
+/hmm/HMMLib.vcxproj.user
+/hmm/Debug
+/hmm/Release
+/AdversarialSearch/VisualStudio/Debug
+/AdversarialSearch/VisualStudio/Release
+/StarcraftBuildOrderSearch/VisualStudio/Debug
+/StarcraftBuildOrderSearch/VisualStudio/Release
+/UAlbertaBot/VisualStudio/Debug
+/UAlbertaBot/VisualStudio/Release
+*.suo
+/UAlbertaBot/VisualStudio/UAlbertaBot.sdf
+/UAlbertaBot/VisualStudio/UAlbertaBot.opensdf
