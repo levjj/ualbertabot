@@ -22,7 +22,9 @@ class Race:
 
     # Write one full game to data.csv
     def write(self, lst):
-        self.data.write(','.join([str(i) for i in lst]))
+        for i in lst:
+            self.data.write(str(i) + ',')
+        self.data.write('\r\n')
 
     # Write the mapping from codes to building sets to stats.csv
     def dump(self):
