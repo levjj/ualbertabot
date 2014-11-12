@@ -9,7 +9,7 @@ class Race:
         # Create P/T/Z directory
         if not os.path.exists(self.name[0]):
             os.makedirs(self.name[0])
-        self.data = open(self.player.race_name[0] + '/data.csv', 'w')
+        self.data = open(self.name[0] + '/data.csv', 'w')
 
     # Returns code for the set of buildings, using auto-increment to
     # create new codes for unseen building sets
