@@ -6,6 +6,7 @@
 
 #include <BWAPI.h>
 #include <BWTA.h>
+#include "HMMLib/hmm.hpp"
 
 #include "UAlbertaBotModule.h"
 namespace BWAPI { Game* Broodwar; }
