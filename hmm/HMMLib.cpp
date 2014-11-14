@@ -5,9 +5,9 @@ using namespace hmmlib;
 
 #include <iostream>
 
-const int K = 6; // number of states
-const int M = 4; // alphabet size
-const int R = 1; // rounds of training
+const int K = 4; // number of states
+const int M = 3; // alphabet size
+const int R = 200; // rounds of training
 
 boost::shared_ptr<HMMVector<double> > sample(HMM<double> &hmm, sequence &obs, int n) {
 	HMMVector<double> I(K);
@@ -56,7 +56,7 @@ boost::shared_ptr<HMMVector<double> > sample(HMM<double> &hmm, sequence &obs, in
 	return emission;
 }
 
-boost::shared_ptr<HMM<double> > train(boost::shared_ptr<HMMVector<double> > initial, boost::shared_ptr<HMM<double> > hmm, sequence* obs) {
+std::pair<double, boost::shared_ptr<HMM<double> > > train(boost::shared_ptr<HMMVector<double> > initial, boost::shared_ptr<HMM<double> > hmm, sequence* obs) {
 	// Running forward
 	HMMMatrix<double> F(obs->size(), K);
 	HMMVector<double> scales(obs->size());
@@ -72,18 +72,42 @@ boost::shared_ptr<HMM<double> > train(boost::shared_ptr<HMMVector<double> > init
 	boost::shared_ptr<HMMMatrix<double> > E_counts_ptr(new HMMMatrix<double>(M, K));
 	hmm->baum_welch(*obs, F, B, scales, *pi_counts_ptr, *T_counts_ptr, *E_counts_ptr);
 
+	std::cout << "train() Prior:" << std::endl;
+	for (int st = 0; st < K; st++) {
+		std::cout.width(14);
+		std::cout << (*pi_counts_ptr)(st) << std::endl;
+	}
+	std::cout << std::endl;
+
     std::cout << "train() Emissions:" << std::endl;
-    for (int st = 0; st < K; st++) {
+	for (int st = 0; st < K; st++) {
 		for (int e = 0; e < M; e++) {
-            std::cout.width(14);
-			std::cout << (*E_counts_ptr)(st, e) << ",";
+			std::cout.width(14);
+			std::cout << (*E_counts_ptr)(e, st) << ",";
 		}
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;
 
-	boost::shared_ptr<HMM<double> > nhmm(new HMM<double>(initial, T_counts_ptr, E_counts_ptr));
-	return nhmm;
+	std::cout << "train() Transitions:" << std::endl;
+	for (int x = 0; x < K; x++) {
+		for (int y = 0; y < K; y++) {
+			std::cout.width(14);
+			std::cout << (*T_counts_ptr)(x, y) << ",";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+
+	boost::shared_ptr<HMM<double> > nhmm(new HMM<double>(pi_counts_ptr, T_counts_ptr, E_counts_ptr));
+
+	// Running forward
+	nhmm->forward(*obs, scales, F);
+
+	double likelihood = nhmm->likelihood(scales);
+
+	std::cout << "likelihood: " << likelihood << std::endl;
+	return std::pair<double, boost::shared_ptr<HMM<double> > >(likelihood, nhmm);
 }
 
 void test();
@@ -108,9 +132,10 @@ int main(int argc, char *args[]) {
     HMMMatrix<double> &T = *T_ptr;
     HMMMatrix<double> &E = *E_ptr;
 
+	I(0) = 1.0;
 	// initial probability distribution
-	for (int i = 0; i < K; i++) {
-		I(i) = 1.0 / K;
+	for (int i = 1; i < K; i++) {
+		I(i) = 0.0;
 	}
 
 	// transition probability distribution
@@ -123,7 +148,7 @@ int main(int argc, char *args[]) {
 	// emission probability distribution
 	for (int i = 0; i < K; i++) {
 		for (int j = 0; j < M; j++) {
-			E(i, j) = 1.0 / M;
+			E(j, i) = 1.0 / M;
 		}
 	}
 
@@ -132,24 +157,29 @@ int main(int argc, char *args[]) {
 
 	std::vector<sequence*> obs(p);
 	obs[0] = new sequence(n);
-    (*obs[0])[0] = 1;
-	(*obs[0])[1] = 2;
-	(*obs[0])[2] = 2;
-	(*obs[0])[3] = 3;
+    (*obs[0])[0] = 0;
+	(*obs[0])[1] = 0;
+	(*obs[0])[2] = 1;
+	(*obs[0])[3] = 2;
 	obs[1] = new sequence(n);
-	(*obs[1])[0] = 1;
+	(*obs[1])[0] = 0;
 	(*obs[1])[1] = 1;
-	(*obs[1])[2] = 3;
-	(*obs[1])[3] = 3;
+	(*obs[1])[2] = 1;
+	(*obs[1])[3] = 2;
 
+	double prev_likelihood = DBL_MIN_EXP;
     for (int r = 0; r < R; r++) {
+		double likelihood = 0.0;
 		for (unsigned int i = 0; i < obs.size(); i++) {
-            boost::shared_ptr<HMM<double> > new_hmm = train(I_ptr, hmm, obs[i]);
-            hmm.swap(new_hmm);
+			std::pair<double, boost::shared_ptr<HMM<double> > > lhmm = train(I_ptr, hmm, obs[i]);
+            hmm.swap(lhmm.second);
+			likelihood += lhmm.first;
 		}
+		if (abs(likelihood - prev_likelihood) < 0.001) break;
+		prev_likelihood = likelihood;
 	}
 
-	sequence robs(0);
+	/*sequence robs(0);
 	//robs[0] = new sequence(n);
 	boost::shared_ptr<HMMVector<double> > E_probs = sample(*hmm, robs, 1);
 
@@ -159,7 +189,7 @@ int main(int argc, char *args[]) {
         std::cout.width(5);
         std::cout << (*E_probs)(q) << "),";
 	}
-	std::cout << std::endl;
+	std::cout << std::endl;*/
 	system("pause");
 }
 
