@@ -62,7 +62,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../Source;$(BWAPI_DIR)/include;$(BOOST_DIR);$(FREETYPE_DIR)/include/freetype2;$(FREETYPE_DIR)/include;$(SDL_IMAGE_DIR);$(SDL_DIR)/include;$(SDL_GFX_DIR);$(FTGL_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../hmm;../Source;$(BWAPI_DIR)/include;$(BOOST_DIR);$(FREETYPE_DIR)/include/freetype2;$(FREETYPE_DIR)/include;$(SDL_IMAGE_DIR);$(SDL_DIR)/include;$(SDL_GFX_DIR);$(FTGL_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -83,7 +83,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../Source;$(BWAPI_DIR)/include;$(BOOST_DIR);$(SDL_DIR)/include;$(SDL_IMAGE_DIR);$(SDL_GFX_DIR);$(FREETYPE_DIR)/include;$(FREETYPE_DIR)/include/freetype2;$(FTGL_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../hmm;../Source;$(BWAPI_DIR)/include;$(BOOST_DIR);$(SDL_DIR)/include;$(SDL_IMAGE_DIR);$(SDL_GFX_DIR);$(FREETYPE_DIR)/include;$(FREETYPE_DIR)/include/freetype2;$(FTGL_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>

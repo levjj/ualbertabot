@@ -72,9 +72,11 @@ boost::shared_ptr<HMM<double> > train(boost::shared_ptr<HMMVector<double> > init
 	boost::shared_ptr<HMMMatrix<double> > E_counts_ptr(new HMMMatrix<double>(M, K));
 	hmm->baum_welch(*obs, F, B, scales, *pi_counts_ptr, *T_counts_ptr, *E_counts_ptr);
 
-	for (int st = 0; st < K; st++) {
+    std::cout << "train() Emissions:" << std::endl;
+    for (int st = 0; st < K; st++) {
 		for (int e = 0; e < M; e++) {
-			std::cout << (*E_counts_ptr)(st, e) << "," << std::endl;
+            std::cout.width(14);
+			std::cout << (*E_counts_ptr)(st, e) << ",";
 		}
 		std::cout << std::endl;
 	}
@@ -84,12 +86,22 @@ boost::shared_ptr<HMM<double> > train(boost::shared_ptr<HMMVector<double> > init
 	return nhmm;
 }
 
+void test();
+
 int main(int argc, char *args[]) {
+    //test();
+
 	int n = 4; // length of observed sequence
 	int p = 2; // number of observations
 
-	boost::shared_ptr<HMMVector<double> > I_ptr(new HMMVector<double>(K));
+	// vector of initial state probabilities where [i] is probability of model initially being in state i
+    //   must sum to 1.0
+    boost::shared_ptr<HMMVector<double> > I_ptr(new HMMVector<double>(K));
+    // matrix of transition probabilities where [i][j] is the probability of the transition from state i to state j
+    //   each row[i] must sum to 1.0
     boost::shared_ptr<HMMMatrix<double> > T_ptr(new HMMMatrix<double>(K, K));
+    // matrix where element [i][j] is probability of state j emitting alphabet symbol a[i]
+    //   each column [j] must sum to 1.0
     boost::shared_ptr<HMMMatrix<double> > E_ptr(new HMMMatrix<double>(M, K));
 
     HMMVector<double> &I = *I_ptr;
@@ -97,26 +109,20 @@ int main(int argc, char *args[]) {
     HMMMatrix<double> &E = *E_ptr;
 
 	// initial probability distribution
-	I(0) = 1.0;
-	for (int i = 1; i < K; i++) {
-		I(i) = 0.8;
+	for (int i = 0; i < K; i++) {
+		I(i) = 1.0 / K;
 	}
 
 	// transition probability distribution
-	for (int i = 1; i < K; i++) {
-		for (int j = 1; j < K; j++) {
-			if (j < i) {
-				T(i, j) = 0;
-			}
-			else {
-				T(i, j) = 1.0 / (K - i + 1);
-			}
+	for (int i = 0; i < K; i++) {
+		for (int j = 0; j < K; j++) {
+			T(i, j) = 1.0 / K;
 		}
 	}
 
 	// emission probability distribution
-	for (int i = 1; i < K; i++) {
-		for (int j = 1; j < M; j++) {
+	for (int i = 0; i < K; i++) {
+		for (int j = 0; j < M; j++) {
 			E(i, j) = 1.0 / M;
 		}
 	}
@@ -136,9 +142,10 @@ int main(int argc, char *args[]) {
 	(*obs[1])[2] = 3;
 	(*obs[1])[3] = 3;
 
-	for (int r = 0; r < R; r++) {
+    for (int r = 0; r < R; r++) {
 		for (unsigned int i = 0; i < obs.size(); i++) {
-			hmm.swap(train(I_ptr, hmm, obs[i]));
+            boost::shared_ptr<HMM<double> > new_hmm = train(I_ptr, hmm, obs[i]);
+            hmm.swap(new_hmm);
 		}
 	}
 
@@ -146,9 +153,94 @@ int main(int argc, char *args[]) {
 	//robs[0] = new sequence(n);
 	boost::shared_ptr<HMMVector<double> > E_probs = sample(*hmm, robs, 1);
 
-	for (int q = 0; q < M; q++) {
-		std::cout << q << "(" << (*E_probs)(q) << "),";
+    std::cout << "new probabilities:" << std::endl;
+    for (int q = 0; q < M; q++) {
+        std::cout << q << "(";
+        std::cout.width(5);
+        std::cout << (*E_probs)(q) << "),";
 	}
 	std::cout << std::endl;
 	system("pause");
+}
+
+void test() {
+    int K = 2; // number of states
+    int M = 2; // alphabet size
+    int n = 4; // length of observed sequence
+
+    // vector of initial state probabilities where [i] is probability of model initially being in state i
+    boost::shared_ptr<HMMVector<double> > pi_ptr(new HMMVector<double>(K));
+    // matrix of transition probabilities where [i][j] is the probability of the transition from state i to state j
+    boost::shared_ptr<HMMMatrix<double> > T_ptr(new HMMMatrix<double>(K, K));
+    // matrix where element [i][j] is probability of state j emitting alphabet symbol a[i]
+    boost::shared_ptr<HMMMatrix<double> > E_ptr(new HMMMatrix<double>(M, K));
+
+    HMMVector<double> &pi = *pi_ptr;
+    // initial probabilities
+    pi(0) = 0.2; pi(1) = 0.8;
+
+    HMMMatrix<double> &T = *T_ptr;
+    // transitions from state 0
+    T(0, 0) = 0.1; T(0, 1) = 0.9;
+    // transitions from state 1
+    T(1, 0) = 0.9; T(1, 1) = 0.1;
+
+    HMMMatrix<double> &E = *E_ptr;
+    // emissions from state 0
+    E(0, 0) = 0.25; E(1, 0) = 0.75;
+    // emissions from state 1
+    E(0, 1) = 0.75; E(1, 1) = 0.25;
+
+    std::cout << "Constructing HMM" << std::endl;
+    HMM<double> hmm(pi_ptr, T_ptr, E_ptr);
+
+    std::cout << "obs : [0, 1, 0, 1]" << std::endl;
+    sequence obs(n);
+    obs[0] = 0;
+    obs[1] = 1;
+    obs[2] = 0;
+    obs[3] = 1;
+    std::cout << "obs length: " << obs.size() << std::endl;
+
+    std::cout << "Running viterbi" << std::endl;
+    sequence hiddenseq(n);
+    // Viterbi algorithm returns the most likely sequence of hidden states that matches an observed sequence
+    double loglik = hmm.viterbi(obs, hiddenseq);
+    std::cout << "-- hiddenseq: [" << hiddenseq[0] << ", " << hiddenseq[1] << ", " << hiddenseq[2] << ", " << hiddenseq[3] << "]" << std::endl;
+    std::cout << "-- log likelihood of hiddenseq: " << loglik << std::endl;
+
+    std::cout << "Running forward" << std::endl;
+    HMMMatrix<double> F(n, K);
+    HMMVector<double> scales(n);
+    hmm.forward(obs, scales, F);
+
+    std::cout << "Running likelihood" << std::endl;
+    loglik = hmm.likelihood(scales);
+    std::cout << "-- loglikelihood of obs: " << loglik << std::endl;
+
+    std::cout << "Running backward" << std::endl;
+    HMMMatrix<double> B(n, K);
+    hmm.backward(obs, scales, B);
+
+    std::cout << "Running posterior decoding" << std::endl;
+    HMMMatrix<double> pd(n, K);
+    hmm.posterior_decoding(obs, F, B, scales, pd);
+
+    std::cout << "Running Baum-Welch" << std::endl;
+    boost::shared_ptr<HMMVector<double> > pi_counts_ptr(new HMMVector<double>(K));
+    boost::shared_ptr<HMMMatrix<double> > T_counts_ptr(new HMMMatrix<double>(K, K));
+    boost::shared_ptr<HMMMatrix<double> > E_counts_ptr(new HMMMatrix<double>(M, K));
+    // get an estimate of parameters given a set of observed feature vectors
+    hmm.baum_welch(obs, F, B, scales, *pi_counts_ptr, *T_counts_ptr, *E_counts_ptr);
+
+    std::cout << "Constructing new HMM" << std::endl;
+    HMM<double> hmm2(pi_counts_ptr, T_counts_ptr, E_counts_ptr);
+
+    std::cout << "Running forward on new HMM" << std::endl;
+    hmm2.forward(obs, scales, F);
+    std::cout << "Running likelihood on new HMM" << std::endl;
+    loglik = hmm2.likelihood(scales);
+    std::cout << "-- loglikelihood of obs in new HMM: " << loglik << std::endl;
+
+    system("pause");
 }
