@@ -1,7 +1,6 @@
 /bo-extractor/pyreplib
 
 #Visual Studio files
-*.vcxproj
 *.user
 *.filters
 *.suo

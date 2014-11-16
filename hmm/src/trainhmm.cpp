@@ -7,7 +7,7 @@ using namespace std;
 
 void test();
 
-void make_emit_and_trans_files(string filename, int num_states, int num_emits) {
+void makeEmitAndTransFiles(string filename, int num_states, int num_emits) {
     ofstream transfile((filename + ".trans").c_str());
     transfile << "INIT" << endl;
     transfile << "INIT S1 1" << endl;
@@ -27,25 +27,50 @@ void make_emit_and_trans_files(string filename, int num_states, int num_emits) {
     emitfile.close();
 }
 
+// Returns the number of observations in the stats.csv file
+int numObservations(string race) {
+	ifstream stats(race + "/stats.csv");
+	string line;
+	int result = 0;
+	while (getline(stats, line))
+	{
+		result++;
+	}
+	return result;
+}
+
+Hmm* hmmFromRace(string race) {
+	makeEmitAndTransFiles(race, 10, 10);
+	Hmm* hmm = new Hmm();
+	hmm.loadProbs(input);
+
+	return hmm;
+}
+
+void trainhmm(char* race)
+{
+
+	Hmm hmm;
+
+
+	// Using a collection of observation sequences to train a HMM model using the Baum-Welch algorithm
+	char* input = "protoss";
+	char* output = "protoss-result1";
+	char* train = "data.csv";
+	ifstream istrm(train);
+	int maxIterations = 10;
+
+	vector<vector<unsigned long>*> trainingSequences;
+	hmm.readSeqs(istrm, trainingSequences);
+	hmm.baumWelch(trainingSequences, maxIterations);
+	hmm.saveProbs(output);
+
+	system("pause");
+}
+
 int main(int argc, char* argv[])
 {
-    //test();
-    Hmm hmm;
-    
-    make_emit_and_trans_files("protoss", 10, 10);
-
-    // Using a collection of observation sequences to train a HMM model using the Baum-Welch algorithm
-    char* input = "protoss";
-    char* output = "protoss-result1";
-    char* train = "data.csv";
-    hmm.loadProbs(input);
-    ifstream istrm(train);
-    int maxIterations = 10;
-
-    vector<vector<unsigned long>*> trainingSequences;
-    hmm.readSeqs(istrm, trainingSequences);
-    hmm.baumWelch(trainingSequences, maxIterations);
-    hmm.saveProbs(output);
+	trainhmm("P");
 
     system("pause");
 }

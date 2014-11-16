@@ -9,7 +9,7 @@ class Race:
         # Create P/T/Z directory
         if not os.path.exists(self.name[0]):
             os.makedirs(self.name[0])
-        self.data = open(self.name[0] + '/data.csv', 'w')
+        self.data = open('../hmm/' + self.name[0] + '/data.csv', 'w')
 
     # Returns code for the set of buildings, using auto-increment to
     # create new codes for unseen building sets
@@ -29,7 +29,7 @@ class Race:
     # Write the mapping from codes to building sets to stats.csv
     def dump(self):
         self.data.close()
-        stats = open(self.name[0] + '/stats.csv', 'w')
+        stats = open('../hmm/' + self.name[0] + '/stats.csv', 'w')
         state_desc = [0] * max([0] + self.states.values())
         for key, value in self.states.items():
             state_desc[value - 1] = key
