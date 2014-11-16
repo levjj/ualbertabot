@@ -404,7 +404,7 @@ void Hmm::print()
 void Hmm::readSeqs(istream& istrm, vector<vector<unsigned long>*>& sequences)
 {
   string line;
-  const string delims(" ");
+  const string delims(" ,");
   while (getline(istrm, line)) {
     vector<unsigned long>* seq = new vector<unsigned long>;
     string::size_type begIdx, endIdx;

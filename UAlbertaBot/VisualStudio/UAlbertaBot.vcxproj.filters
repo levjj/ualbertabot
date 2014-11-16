@@ -46,6 +46,9 @@
     <Filter Include="extra">
       <UniqueIdentifier>{f0cc82d6-1735-46ae-a722-c81699ab361d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="hmm">
+      <UniqueIdentifier>{099ca894-e21c-4f27-9150-8900ea8543bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\CombatCommander.cpp">
@@ -155,6 +158,15 @@
     </ClCompile>
     <ClCompile Include="..\Source\ReplayVisualizer.cpp">
       <Filter>extra</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\hmm2\src\hmm.cpp">
+      <Filter>hmm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\hmm2\src\logprobs.cpp">
+      <Filter>hmm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\hmm2\src\tables.cpp">
+      <Filter>hmm</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -277,6 +289,18 @@
     </ClInclude>
     <ClInclude Include="..\Source\ReplayVisualizer.h">
       <Filter>extra</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\hmm2\src\hmm.h">
+      <Filter>hmm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\hmm2\src\logprobs.h">
+      <Filter>hmm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\hmm2\src\str2idmap.h">
+      <Filter>hmm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\hmm2\src\tables.h">
+      <Filter>hmm</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
