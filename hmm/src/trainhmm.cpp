@@ -7,12 +7,11 @@ using namespace std;
 
 void test();
 
-void trainhmm(string race)
+void trainhmm(string race, int maxIterations)
 {
 	Hmm hmm;
 	hmm.loadFromRace(race, true);
 	ifstream istrm(race + "/data.csv");
-	int maxIterations = 10;
 
 	vector<vector<unsigned long>*> trainingSequences;
 	hmm.readSeqs(istrm, trainingSequences);
@@ -22,9 +21,16 @@ void trainhmm(string race)
 
 int main(int argc, char* argv[])
 {
-	trainhmm("P");
-	trainhmm("T");
-	trainhmm("Z");
+	for (int i = 1; i <= 128; i <<= 1) {
+		cout << "s/i=" << i << endl;
+		system("time /t");
+		trainhmm("P", i);
+		system("time /t");
+		trainhmm("T", i);
+		system("time /t");
+		trainhmm("Z", i);
+		system("time /t");
+	}
 
     system("pause");
 }

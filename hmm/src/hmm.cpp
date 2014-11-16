@@ -492,7 +492,7 @@ int Hmm::numObservations(string race) {
 // Use create=true to reset the files 
 void Hmm::loadFromRace(string race, bool create) {
 	if (create) {
-		this->makeEmitAndTransFiles(race, 10, this->numObservations(race));
+		this->makeEmitAndTransFiles(race, 20, this->numObservations(race));
 	}
 	this->loadProbs(race + "/hmm");
 }
