@@ -497,12 +497,37 @@ void Hmm::loadFromRace(string race, bool create) {
 	this->loadProbs(race + "/hmm");
 }
 
-void Hmm::observe(int state) {
-	
+vector<double>* Hmm::getCurrentPD() {
+	this->forward();
+	TimeSlot* last = _timeSlots[_timeSlots.size() - 1];
+	vector<double> *alphaT = new vector<double>();
+	for (TimeSlot::iterator it = last->begin(); it != last->end(); it++) {
+		alphaT->push_back((*it)->logAlpha());
+	}
+	return alphaT;
 }
 
-int Hmm::predict(int n) {
+void Hmm::observe(int state) {
+	this->addObservation(to_string(state));
+}
 
+vector<double>* Hmm::predict(int t) {
+	vector<double>* current = this->getCurrentPD();
+	return current;
+	/* TODO: Make t transitions and then predict with the emission vector E
+
+	for (int i = 0; i < t; i++) {
+		
+	}
+	
+	vector<double>* result = new vector<double*>();
+	for (int i = 0; i < this->  ; i++) {
+	for (int i = 0; i < n; i++) {
+		double em = 0;
+		result->push_back(em);
+	}
+	delete current;
+	return result;*/
 }
 
 void PseudoCounts::print(Str2IdMap& str2id)

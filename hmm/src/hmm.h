@@ -111,6 +111,9 @@ class Hmm {
   /** Returns the number of observations in the stats.csv file */
   int numObservations(string race);
 
+  /** Returns a vector with the current probabilities of all internal states. */
+  vector<double>* Hmm::getCurrentPD();
+
 public:
   /** Add an observation into the Hmm after the current last time
       slot. The states that have non-zero probability of generating
@@ -182,6 +185,15 @@ public:
   /** Returns a new HMM with the saved probabilities
       Use create=true to reset the files */
   void loadFromRace(string race, bool create);
+
+  /** Adds an observation and update the current internal state */
+  void observe(int state);
+
+  /** Predict's the state n steps in advance.
+      (t=0) -> current state
+	  (t=1) -> 12.6s in the future ...
+	  Returns posterior probability distribution over possible states.*/
+  vector<double>* predict(int t);
 
   Hmm();
   ~Hmm();
