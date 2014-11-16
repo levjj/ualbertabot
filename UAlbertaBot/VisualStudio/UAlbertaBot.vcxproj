@@ -62,7 +62,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../hmm;../Source;$(BWAPI_DIR)/include;$(BOOST_DIR);$(FREETYPE_DIR)/include/freetype2;$(FREETYPE_DIR)/include;$(SDL_IMAGE_DIR);$(SDL_DIR)/include;$(SDL_GFX_DIR);$(FTGL_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../hmm2/src;../Source;$(BWAPI_DIR)/include;$(BOOST_DIR);$(FREETYPE_DIR)/include/freetype2;$(FREETYPE_DIR)/include;$(SDL_IMAGE_DIR);$(SDL_DIR)/include;$(SDL_GFX_DIR);$(FTGL_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -83,7 +83,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../hmm;../Source;$(BWAPI_DIR)/include;$(BOOST_DIR);$(SDL_DIR)/include;$(SDL_IMAGE_DIR);$(SDL_GFX_DIR);$(FREETYPE_DIR)/include;$(FREETYPE_DIR)/include/freetype2;$(FTGL_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../hmm2/src;../Source;$(BWAPI_DIR)/include;$(BOOST_DIR);$(SDL_DIR)/include;$(SDL_IMAGE_DIR);$(SDL_GFX_DIR);$(FREETYPE_DIR)/include;$(FREETYPE_DIR)/include/freetype2;$(FTGL_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -110,6 +110,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\hmm2\src\hmm.cpp" />
+    <ClCompile Include="..\..\hmm2\src\logprobs.cpp" />
+    <ClCompile Include="..\..\hmm2\src\tables.cpp" />
     <ClCompile Include="..\Source\CombatSimulation.cpp" />
     <ClCompile Include="..\Source\MicroSearchManager.cpp" />
     <ClCompile Include="..\Source\base\BuildingData.cpp" />
@@ -148,6 +151,10 @@
     <ClCompile Include="..\Source\Visualizer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\hmm2\src\hmm.h" />
+    <ClInclude Include="..\..\hmm2\src\logprobs.h" />
+    <ClInclude Include="..\..\hmm2\src\str2idmap.h" />
+    <ClInclude Include="..\..\hmm2\src\tables.h" />
     <ClInclude Include="..\Source\CombatSimulation.h" />
     <ClInclude Include="..\Source\MicroSearchManager.h" />
     <ClInclude Include="..\Source\base\BuildingData.h" />

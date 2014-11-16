@@ -12,6 +12,8 @@
 
 #include "..\..\StarcraftBuildOrderSearch\Source\starcraftsearch\Timer.hpp"
 
+#include "hmm.h"
+
 class TimerManager
 {
 

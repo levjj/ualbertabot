@@ -11,6 +11,11 @@ InformationManager::InformationManager()
 	, lastFrameRegroup(false)
 {
 	initializeRegionInformation();
+
+    //BWAPI::Broodwar->printf("InformationManager constructor");
+
+    // load HMM's
+    protoss_hmm.loadProbs("protoss");
 }
 
 // get an instance of this

@@ -7,6 +7,8 @@
 
 #include "..\..\AdversarialSearch\source\Map.hpp"
 
+#include "hmm.h"
+
 struct BaseInfo;
 typedef std::vector<BaseInfo> BaseInfoVector;
 
@@ -36,6 +38,8 @@ class InformationManager {
 
 	const UnitData &					getUnitData(BWAPI::Player * player) const;
 	const UnitData &					getUnitData(BWAPI::Unit * unit) const;
+
+    Hmm                                 protoss_hmm;
 
 public:
 

@@ -13,6 +13,9 @@
 
 #include <cmath>
 
+#include <float.h>
+#define isinf(x) (!_finite(x))
+
 #include "logprobs.h"
 
 /** The input array contains a set of log probabilities lp1, lp2, lp3
