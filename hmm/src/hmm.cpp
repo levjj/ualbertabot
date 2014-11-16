@@ -455,6 +455,56 @@ void Hmm::genSeq(vector<unsigned long>& seq)
   }
 }
 
+void Hmm::makeEmitAndTransFiles(string race, int num_states, int num_emits) {
+	ofstream transfile(race + "/hmm.trans");
+	transfile << "S1" << endl;
+	for (int i = 1; i <= num_states; ++i) {
+		for (int j = i; j <= num_states; ++j) {
+			float prob = 1.0 / (num_states - i + 1);
+			transfile << "S" << i << " S" << j << " " << prob << endl;
+		}
+	}
+	transfile.close();
+
+	ofstream emitfile(race + "/hmm.emit");
+	for (int i = 1; i <= num_states; ++i) {
+		for (int j = 1; j <= num_emits; ++j) {
+			float prob = 1.0 / num_emits;
+			emitfile << "S" << i << " " << j << " " << prob << endl;
+		}
+	}
+	emitfile.close();
+}
+
+// Returns the number of observations in the stats.csv file
+int Hmm::numObservations(string race) {
+	ifstream stats(race + "/stats.csv");
+	string line;
+	int result = 0;
+	while (getline(stats, line))
+	{
+		result++;
+	}
+	return result;
+}
+
+// Returns a new HMM with the saved probabilities
+// Use create=true to reset the files 
+void Hmm::loadFromRace(string race, bool create) {
+	if (create) {
+		this->makeEmitAndTransFiles(race, 10, this->numObservations(race));
+	}
+	this->loadProbs(race + "/hmm");
+}
+
+void Hmm::observe(int state) {
+	
+}
+
+int Hmm::predict(int n) {
+
+}
+
 void PseudoCounts::print(Str2IdMap& str2id)
 {
   cerr << "TRANSITION"<<endl;

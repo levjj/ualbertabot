@@ -7,21 +7,22 @@ using namespace std;
 
 void test();
 
-void makeEmitAndTransFiles(string filename, int num_states, int num_emits) {
-    ofstream transfile((filename + ".trans").c_str());
-    transfile << "INIT" << endl;
-    transfile << "INIT S1 1" << endl;
+void makeEmitAndTransFiles(string race, int num_states, int num_emits) {
+    ofstream transfile(race + "/hmm.trans");
+    transfile << "S1" << endl;
     for (int i = 1; i <= num_states; ++i) {
-        for (int j = 1; j <= num_states; ++j) {
-            transfile << "S" << i << " S" << j << " " << 1.0/num_states << endl;
+        for (int j = i; j <= num_states; ++j) {
+			float prob = 1.0 / (num_states - i + 1);
+            transfile << "S" << i << " S" << j << " " << prob << endl;
         }
     }
     transfile.close();
 
-    ofstream emitfile((filename + ".emit").c_str());
+    ofstream emitfile(race + "/hmm.emit");
     for (int i = 1; i <= num_states; ++i) {
-        for (int j = 1; j <= num_states; ++j) {
-            emitfile << "S" << i << " " << j << " 0.1" << endl;
+        for (int j = 1; j <= num_emits; ++j) {
+			float prob = 1.0 / num_emits;
+            emitfile << "S" << i << " " << j << " " << prob << endl;
         }
     }
     emitfile.close();
@@ -39,38 +40,34 @@ int numObservations(string race) {
 	return result;
 }
 
-Hmm* hmmFromRace(string race) {
-	makeEmitAndTransFiles(race, 10, 10);
+// Returns a new HMM with the saved probabilities
+// Use create=true to reset the files 
+Hmm* hmmForRace(string race, bool create) {
+	if (create) {
+		makeEmitAndTransFiles(race, 10, numObservations(race));
+	}
 	Hmm* hmm = new Hmm();
-	hmm.loadProbs(input);
-
+	hmm->loadProbs(race + "/hmm");
 	return hmm;
 }
 
-void trainhmm(char* race)
+void trainhmm(string race)
 {
-
-	Hmm hmm;
-
-
-	// Using a collection of observation sequences to train a HMM model using the Baum-Welch algorithm
-	char* input = "protoss";
-	char* output = "protoss-result1";
-	char* train = "data.csv";
-	ifstream istrm(train);
+	Hmm* hmm = hmmForRace(race, true);
+	ifstream istrm(race + "/data.csv");
 	int maxIterations = 10;
 
 	vector<vector<unsigned long>*> trainingSequences;
-	hmm.readSeqs(istrm, trainingSequences);
-	hmm.baumWelch(trainingSequences, maxIterations);
-	hmm.saveProbs(output);
-
-	system("pause");
+	hmm->readSeqs(istrm, trainingSequences);
+	hmm->baumWelch(trainingSequences, maxIterations);
+	hmm->saveProbs(race + "/hmm");
 }
 
 int main(int argc, char* argv[])
 {
 	trainhmm("P");
+	trainhmm("T");
+	trainhmm("Z");
 
     system("pause");
 }

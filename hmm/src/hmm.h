@@ -104,6 +104,13 @@ class Hmm {
       return value is the probability of the observations according to
       the current model.  */
   double getPseudoCounts(PseudoCounts& counts);
+
+  /** Creates emission and transition probability files */
+  void makeEmitAndTransFiles(string race, int num_states, int num_emits);
+
+  /** Returns the number of observations in the stats.csv file */
+  int numObservations(string race);
+
 public:
   /** Add an observation into the Hmm after the current last time
       slot. The states that have non-zero probability of generating
@@ -171,6 +178,10 @@ public:
   /** Generate an observation sequence with up to maxlen elements
       according to the model. */
   void genSeq(vector<unsigned long>& seq);
+
+  /** Returns a new HMM with the saved probabilities
+      Use create=true to reset the files */
+  void loadFromRace(string race, bool create);
 
   Hmm();
   ~Hmm();

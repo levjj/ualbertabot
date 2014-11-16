@@ -7,8 +7,8 @@ class Race:
         self.name = name;
         self.states = {}
         # Create P/T/Z directory
-        if not os.path.exists(self.name[0]):
-            os.makedirs(self.name[0])
+        if not os.path.exists('../hmm/' + self.name[0]):
+            os.makedirs('../hmm/' + self.name[0])
         self.data = open('../hmm/' + self.name[0] + '/data.csv', 'w')
 
     # Returns code for the set of buildings, using auto-increment to
@@ -53,6 +53,17 @@ class Game:
         self.parsePlayers()
         self.race = races[self.player.race_name]
         self.bucketSize = 300 # 1 frame = 42ms, 300 frames = 12.6s
+        self.ignored = [
+            'Supply Depot',
+            'Missile Turret',
+            'Bunker',
+            'Infested CC',
+            'Creep Colony',
+            'Spore Colony',
+            'Sunken Colony',
+            'Pylon',
+            'Photon Cannon',
+            'Shield Battery']
 
     # Model the opponent of the protoss player (ignores TvZ games, etc.)
     def parsePlayers(self):
@@ -70,9 +81,9 @@ class Game:
         self.buckets = {}
         for action in self.player.actions:
             if action.id == 0x0C: # Build action
-                idx = action.tick % self.bucketSize
+                idx = action.tick / self.bucketSize
                 bucket = self.buckets.get(idx, [])
-                bucket.append(action)
+                bucket.append(action.get_building_type())
                 self.buckets[idx] = bucket
 
     # Generate building set codes for every 12.6s of the game and write to file
@@ -84,18 +95,11 @@ class Game:
         trace = []
         for step in range(max(self.buckets.keys())+1):
             bucket = self.buckets.get(step, [])
-            for action in bucket:
-                building = action.get_building_type()
-                if building not in buildings:
+            for building in bucket:
+                if building not in buildings and building not in self.ignored:
                     buildings.append(building)
             trace.append(self.race.getState(buildings))
         self.race.write(trace)
-
-    # If both players are Protoss, repeat analysis for other player, too
-    def analyze2(self):
-        if self.race.name == 'Protoss':
-            self.player = self.replay.players[0]
-            self.analyze()
 
 # Expect directory with replay files as first argument
 rdir = sys.argv[1]
@@ -108,6 +112,11 @@ for root, dirs, files in os.walk(rdir):
             try:
                 game = Game(fname)
                 game.analyze()
+                # If both players are Protoss, do analysis for other player as well
+                if game.race.name == 'Protoss':
+                    game.player = game.replay.players[0]
+                    game.analyze()
+
                 print fname, ": success"
             except Exception as e:
                 print fname, ": bad replay", str(e)
