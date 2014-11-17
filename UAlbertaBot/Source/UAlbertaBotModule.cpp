@@ -24,7 +24,7 @@ UAlbertaBotModule::~UAlbertaBotModule() {}
 
 void UAlbertaBotModule::onStart()
 {
-	BWAPI::Broodwar->setLocalSpeed(0);
+	//BWAPI::Broodwar->setLocalSpeed(0);
 
 	BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput);
 	//BWAPI::Broodwar->enableFlag(BWAPI::Flag::CompleteMapInformation);
