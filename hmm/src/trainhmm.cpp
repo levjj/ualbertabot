@@ -7,10 +7,11 @@ using namespace std;
 
 void test();
 
-void trainhmm(string race, int maxIterations)
+void trainhmm(string race, int numStates, int maxIterations)
 {
 	Hmm hmm;
-	hmm.loadFromRace(race, true);
+	hmm.makeEmitAndTransFiles(race, numStates);
+	hmm.loadFromRace(race);
 	ifstream istrm(race + "/data.csv");
 
 	vector<vector<unsigned long>*> trainingSequences;
@@ -19,69 +20,62 @@ void trainhmm(string race, int maxIterations)
 	hmm.saveProbs(race + "/hmm");
 }
 
+vector<unsigned long>* loadReplayData(string race, int idx) {
+	vector<unsigned long>* result = new vector<unsigned long>();
+	ifstream istrm(race + "/data.csv");
+	string line;
+	for (int i = 0; i <= idx; i++) {
+		getline(istrm, line);
+	}
+	string::size_type begIdx, endIdx;
+	begIdx = line.find_first_not_of(",");
+	while (begIdx != string::npos) {
+		endIdx = line.find_first_of(",", begIdx);
+		if (endIdx == string::npos) {
+			endIdx = line.length();
+		}
+		string word = line.substr(begIdx, endIdx - begIdx);
+		result->push_back(atol(word.c_str()));
+		begIdx = line.find_first_not_of(",", endIdx);
+	}
+	return result;
+}
+
+void testhmm(string race, int index)
+{
+	cout << "Testing with replay " << index << endl;
+	Hmm hmm;
+	hmm.loadFromRace(race);
+	vector<unsigned long>* replay = loadReplayData(race, index);
+	cout << "Replay length: " << replay->size() << endl;
+	unsigned int missed = 0;
+	for (vector<unsigned long>::iterator it = replay->begin(); it != replay->end(); it++) {
+		int prediction = hmm.predictMax(0);
+		cout << "Prediction: ";
+		cout.width(4);
+		cout << prediction << " Actual: ";
+		cout.width(4);
+		cout << (*it) << endl;
+		if (prediction != *it) missed++;
+		hmm.observe(*it);
+	}
+	cout << "Accuracy: " << (1.0 - missed / (double)replay->size()) << endl;
+}
+
 int main(int argc, char* argv[])
 {
-	for (int i = 1; i <= 128; i <<= 1) {
-		cout << "s/i=" << i << endl;
+	if (argc > 1) {
+		testhmm("P", atoi(argv[1]));
+	}
+	else {
+		//system("time /t");
+		//trainhmm("P", 8, 128);
 		system("time /t");
-		trainhmm("P", i);
+		trainhmm("T", 8, 128);
 		system("time /t");
-		trainhmm("T", i);
-		system("time /t");
-		trainhmm("Z", i);
+		trainhmm("Z", 8, 128);
 		system("time /t");
 	}
 
     system("pause");
-}
-
-void test() {
-    Hmm hmm;
-
-    // Using a collection of observation sequences to train a HMM model using the Baum-Welch algorithm
-    char* input = "phone-init1";
-    char* output = "phone-result1";
-    char* train = "phone.train";
-    hmm.loadProbs(input);
-    ifstream istrm(train);
-    int maxIterations = 10;
-
-    vector<vector<unsigned long>*> trainingSequences;
-    hmm.readSeqs(istrm, trainingSequences);
-    hmm.baumWelch(trainingSequences, maxIterations);
-    hmm.saveProbs(output);
-
-    // Given an HMM and an observation sequence, compute the sequence of the hidden states that has the highest probability using the Viterbi algorithm
-    Hmm hmm2;
-
-    hmm2.loadProbs("phone\0");
-    ifstream infile("phone.input\0");
-    vector<vector<unsigned long>*> sequences;
-    hmm2.readSeqs(infile, sequences);
-
-    for (unsigned int i = 0; i<sequences.size(); i++) {
-        vector<unsigned long>& seq = *sequences[i];
-        for (unsigned int j = 0; j<seq.size(); j++) {
-            hmm2.addObservation(seq[j]);
-        }
-        vector<Transition*> path;
-        double jointProb = hmm2.viterbi(path);
-        cout << "P(path)=" << exp(jointProb - hmm2.obsProb()) << endl
-            << "path: " << endl;
-        for (unsigned int i = 0; i<path.size(); i++) {
-            Transition* trans = path[i];
-            if (trans == 0) continue;
-            cout << hmm2.getStr(trans->_obs) << '\t'
-                << hmm2.getStr(trans->_to->state()) << endl;
-        }
-        hmm2.reset();
-    }
-
-    // Generate an observation sequence using a HMM model
-    Hmm hmm3;
-
-    hmm3.loadProbs("phone\0");
-    ofstream outfile("phone-sequences.txt\0");
-    int seqs = 10;
-    hmm3.genSeqs(outfile, seqs);
 }
