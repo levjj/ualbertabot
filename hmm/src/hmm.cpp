@@ -638,5 +638,5 @@ int BuildingStats::getClosestState(vector<string> buildings) {
             smallest_state_index = i;
             smallest_state_size = sets[i].size();
         }
-    return smallest_state_index;
+    return smallest_state_index + 1;
 }

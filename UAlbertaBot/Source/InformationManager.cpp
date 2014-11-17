@@ -12,8 +12,6 @@ InformationManager::InformationManager()
 {
 	initializeRegionInformation();
 
-    //BWAPI::Broodwar->printf("InformationManager constructor");
-
     // load HMM
     char race_c = BWAPI::Broodwar->enemy()->getRace().getName().c_str()[0];
     string race = " ";
@@ -24,6 +22,7 @@ InformationManager::InformationManager()
     string file = "?/stats.csv";
     file[0] = race_c;
     stats.readStatsFile(file);
+
     current_enemy_state = predicted_enemy_state = 0;
 }
 
@@ -95,7 +94,7 @@ void InformationManager::update()
             }
         }
     }
-    unsigned int state = stats.getClosestState(target) + 1;
+    unsigned int state = stats.getClosestState(target);
     hmm.observe(state);
     unsigned int predicted_state = hmm.predictMax(1); // predict state in next 12.6s
     if (state != current_enemy_state || predicted_state != predicted_enemy_state) {
