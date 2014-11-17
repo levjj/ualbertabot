@@ -58,7 +58,9 @@ void InformationManager::update()
                 if (building.find("Arbiter")        != string::npos) target.push_back("Arbiter Tribunal");
                 if (building.find("Forge")          != string::npos) target.push_back("Forge");
                 if (building.find("Adun")           != string::npos) target.push_back("Citadel of Adun");
-                if (building.find("Nexus")          != string::npos) target.push_back("Nexus");
+				if (numUnits > 1) {
+					if (building.find("Nexus") != string::npos) target.push_back("Nexus");
+				}
                 if (building.find("Beacon")         != string::npos) target.push_back("Fleet Beacon");
                 if (building.find("Facility")       != string::npos) target.push_back("Robotics Facility");
                 if (building.find("Observ")         != string::npos) target.push_back("Observatory");
@@ -68,7 +70,9 @@ void InformationManager::update()
                 // Terran buildings
                 if (building.find("Barracks") != string::npos) target.push_back("Barracks");
                 if (building.find("Academy") != string::npos) target.push_back("Academy");
-                if (building.find("Command Center") != string::npos) target.push_back("Command Center");
+				if (numUnits > 1) {
+					if (building.find("Command Center") != string::npos) target.push_back("Command Center");
+				}
                 if (building.find("Armory") != string::npos) target.push_back("Armory");
                 if (building.find("Refinery") != string::npos) target.push_back("Refinery");
                 if (building.find("Factory") != string::npos) target.push_back("Factory");
@@ -83,7 +87,9 @@ void InformationManager::update()
                 if (building.find("Starport") != string::npos) target.push_back("Starport");
                 // Zerg buildings
                 if (building.find("Spawning Pool") != string::npos) target.push_back("Spawning Pool");
-                if (building.find("Hatchery") != string::npos) target.push_back("Hatchery");
+				if (numUnits > 1) {
+					if (building.find("Hatchery") != string::npos) target.push_back("Hatchery");
+				}
                 if (building.find("Spire") != string::npos) target.push_back("Spire");
                 if (building.find("Evolution Chamber") != string::npos) target.push_back("Evolution Chamber");
                 if (building.find("Extractor") != string::npos) target.push_back("Extractor");
