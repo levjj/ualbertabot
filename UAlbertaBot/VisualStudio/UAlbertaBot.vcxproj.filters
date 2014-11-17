@@ -159,13 +159,13 @@
     <ClCompile Include="..\Source\ReplayVisualizer.cpp">
       <Filter>extra</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\hmm2\src\hmm.cpp">
+    <ClCompile Include="..\..\hmm\src\hmm.cpp">
       <Filter>hmm</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\hmm2\src\logprobs.cpp">
+    <ClCompile Include="..\..\hmm\src\logprobs.cpp">
       <Filter>hmm</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\hmm2\src\tables.cpp">
+    <ClCompile Include="..\..\hmm\src\tables.cpp">
       <Filter>hmm</Filter>
     </ClCompile>
   </ItemGroup>
@@ -290,16 +290,16 @@
     <ClInclude Include="..\Source\ReplayVisualizer.h">
       <Filter>extra</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\hmm2\src\hmm.h">
+    <ClInclude Include="..\..\hmm\src\hmm.h">
       <Filter>hmm</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\hmm2\src\logprobs.h">
+    <ClInclude Include="..\..\hmm\src\logprobs.h">
       <Filter>hmm</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\hmm2\src\str2idmap.h">
+    <ClInclude Include="..\..\hmm\src\str2idmap.h">
       <Filter>hmm</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\hmm2\src\tables.h">
+    <ClInclude Include="..\..\hmm\src\tables.h">
       <Filter>hmm</Filter>
     </ClInclude>
   </ItemGroup>

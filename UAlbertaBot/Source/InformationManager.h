@@ -39,7 +39,8 @@ class InformationManager {
 	const UnitData &					getUnitData(BWAPI::Player * player) const;
 	const UnitData &					getUnitData(BWAPI::Unit * unit) const;
 
-    Hmm                                 protoss_hmm;
+    Hmm                                 hmm;
+    BuildingStats                       stats;
 
 public:
 

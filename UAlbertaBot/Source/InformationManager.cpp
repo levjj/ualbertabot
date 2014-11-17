@@ -15,7 +15,14 @@ InformationManager::InformationManager()
     //BWAPI::Broodwar->printf("InformationManager constructor");
 
     // load HMM's
-    protoss_hmm.loadProbs("protoss");
+    char race_c = BWAPI::Broodwar->enemy()->getRace().getName().c_str()[0];
+    string race = " ";
+    race[0] = race_c;
+    hmm.loadFromRace(race);
+
+    string file = "?/stats.csv";
+    file[0] = race_c;
+    stats.readStatsFile(file);
 }
 
 // get an instance of this
@@ -31,6 +38,36 @@ void InformationManager::update()
 	updateBaseLocationInfo();
 	map.setUnitData(BWAPI::Broodwar);
 	map.setBuildingData(BWAPI::Broodwar);
+    // make a list of opponent buildings
+    vector<string> target;
+    // for each unit in the queue
+    BOOST_FOREACH(BWAPI::UnitType t, BWAPI::UnitTypes::allUnitTypes()) {
+        int numUnits = enemyUnitData.getNumUnits(t);
+        int numDeadUnits = enemyUnitData.getNumDeadUnits(t);
+        // if there exist units in the vector
+        if (numUnits > 0) {
+            if (t.isBuilding()) {
+                string building = t.getName();
+                if (building.find("Assim")          != string::npos) target.push_back("Assimilator");
+                if (building.find("Gateway")        != string::npos) target.push_back("Gateway");
+                if (building.find("Cyber")          != string::npos) target.push_back("Cybernetics Core");
+                if (building.find("Arbiter")        != string::npos) target.push_back("Arbiter Tribunal");
+                if (building.find("Forge")          != string::npos) target.push_back("Forge");
+                if (building.find("Adun")           != string::npos) target.push_back("Citadel of Adun");
+                if (building.find("Nexus")          != string::npos) target.push_back("Nexus");
+                if (building.find("Beacon")         != string::npos) target.push_back("Fleet Beacon");
+                if (building.find("Facility")       != string::npos) target.push_back("Robotics Facility");
+                if (building.find("Observ")         != string::npos) target.push_back("Observatory");
+                if (building.find("Stargate")       != string::npos) target.push_back("Stargate");
+                if (building.find("Templar")        != string::npos) target.push_back("Templar Archives");
+                if (building.find("Support")        != string::npos) target.push_back("Robotics Support Bay");
+            }
+        }
+    }
+    int state = stats.getClosestState(target) + 1;
+    BWAPI::Broodwar->printf("InformationManager: closet state is %d", state);
+    hmm.observe(state);
+    unsigned long predicted_state = hmm.predictMax(1); // predict state in next 12.6s
 }
 
 void InformationManager::updateUnitInfo() 

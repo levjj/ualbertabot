@@ -14,6 +14,10 @@
 
 #include "str2idmap.h"
 #include "tables.h"
+#include <vector>
+#include <string>
+#include <sstream>
+#include <float.h>
 
 class HmmNode;
 class Hmm;
@@ -200,4 +204,13 @@ public:
 
   Hmm();
   ~Hmm();
+};
+
+class BuildingStats
+{
+    vector<vector<string>> sets;
+
+public:
+    void readStatsFile(string filename);
+    int getClosestState(vector<string> buildings);
 };

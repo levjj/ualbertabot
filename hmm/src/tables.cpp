@@ -176,7 +176,7 @@ void OneDTable::max(unsigned long& next)
 	unsigned long idx = 0;
 	for (OneDTable::iterator it = begin(); it != end(); it++) {
 		idx = it->first;
-		if (it == begin() || it->second > this->at(next)) {
+		if (it == begin() || it->second > (*this)[next]) {
 			next = idx;
 		}
 	}

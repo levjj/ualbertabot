@@ -455,7 +455,7 @@ void Hmm::genSeq(vector<unsigned long>& seq)
 
 // Returns the number of observations in the stats.csv file
 int Hmm::numObservations(string race) {
-	ifstream stats(race + "/stats.csv");
+	ifstream stats((race + "/stats.csv").c_str());
 	string line;
 	int result = 0;
 	while (getline(stats, line))
@@ -467,7 +467,7 @@ int Hmm::numObservations(string race) {
 
 void Hmm::makeEmitAndTransFiles(string race, int num_states) {
 	int num_emits = numObservations(race);
-	ofstream transfile(race + "/hmm.trans");
+	ofstream transfile((race + "/hmm.trans").c_str());
 	transfile << "S1" << endl;
 	for (int i = 1; i <= num_states; ++i) {
 		for (int j = i; j <= num_states; ++j) {
@@ -477,7 +477,7 @@ void Hmm::makeEmitAndTransFiles(string race, int num_states) {
 	}
 	transfile.close();
 
-	ofstream emitfile(race + "/hmm.emit");
+	ofstream emitfile((race + "/hmm.emit").c_str());
 	for (int i = 1; i <= num_states; ++i) {
 		for (int j = 1; j <= num_emits; ++j) {
 			double prob = 1.0 / num_emits;
@@ -498,7 +498,7 @@ vector<double>* Hmm::getCurrentPD() {
 	if (_timeSlots.empty()) {
 		result->push_back(0.0);
 		for (unsigned int i = 1; i < _transition.size(); i++) {
-			result->push_back(-INFINITY);
+			result->push_back(-DBL_MAX);
 		}
 	}
 	else {
@@ -513,7 +513,11 @@ vector<double>* Hmm::getCurrentPD() {
 }
 
 void Hmm::observe(unsigned long state) {
-	this->addObservation(to_string(state));
+    stringstream ss;
+    string s;
+    ss << state;
+    ss >> s;
+	this->addObservation(s);
 }
 
 vector<double>* Hmm::predict(unsigned int t) {
@@ -524,7 +528,7 @@ vector<double>* Hmm::predict(unsigned int t) {
 
 	// Predict with the emission vector E
 	vector<double>* result = new vector<double>();
-	for (unsigned int i = 0; i < _emission.at(0)->size(); i++) {
+	for (unsigned int i = 0; i < _emission[0]->size(); i++) {
 		double em = 0;
 		for (unsigned int st = 0; st < current->size(); st++) {
 			em += exp(current->at(st) + _emission.get(_transition.size() + i, st));
@@ -573,4 +577,66 @@ void PseudoCounts::print(Str2IdMap& str2id)
   _stateCount.save(cerr, str2id);
   cerr << "*********************" << endl;
   cerr << "INIT-PROBS"<<endl;
+}
+
+void BuildingStats::readStatsFile(string filename) {
+    sets.clear();
+    ifstream infile(filename.c_str());
+    string line;
+    if (infile.is_open()) {
+        while (getline(infile, line)) {
+            vector<string> buildings;
+            size_t start = line.find('[');
+            size_t end = line.find(']');
+            if (end == start + 1) {
+                buildings.push_back("");
+                sets.push_back(buildings);
+                continue;
+            }
+            line = line.substr(start + 1, end - start - 1);
+            do {
+                start = line.find('\'');
+                end = line.find('\'', start + 1);
+                string building = line.substr(start + 1, end - start - 1);
+                buildings.push_back(building);
+                line = line.substr(end + 1);
+            } while (line.find(',') != string::npos);
+            sets.push_back(buildings);
+        }
+        infile.close();
+    }
+}
+
+// returns the closest state number given a set of buildings
+// this should be the smallest subset
+// currently it just returns the first set that is valid
+int BuildingStats::getClosestState(vector<string> buildings) {
+    vector<bool> valid_states;
+    valid_states.resize(sets.size());
+    for (int i = 0; i != valid_states.size(); ++i)
+        valid_states[i] = true;
+
+    // if a state does not contain all the buildings, invalidate it
+    for (int target_index = 0; target_index != buildings.size(); ++target_index)
+        for (unsigned int state = 0; state != sets.size(); ++state) {
+            if (!valid_states[state])
+                continue;
+            bool match = false;
+            for (int building_index = 0; building_index != sets[state].size(); ++ building_index)
+                if (sets[state][building_index] == buildings[target_index]) {
+                    match = true;
+                    break;
+                }
+            if (!match)
+                valid_states[state] = false;
+        }
+
+    int smallest_state_index = 0;
+    int unsigned smallest_state_size = 999;
+    for (int i = 0; i != valid_states.size(); ++i)
+        if (valid_states[i] && sets[i].size() < smallest_state_size) {
+            smallest_state_index = i;
+            smallest_state_size = sets[i].size();
+        }
+    return smallest_state_index;
 }
