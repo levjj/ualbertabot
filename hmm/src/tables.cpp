@@ -109,6 +109,13 @@ bool TwoDTable::rand(unsigned long curr, unsigned long& next)
   return it->second->rand(next);
 }
 
+void TwoDTable::max(unsigned long curr, unsigned long& next)
+{
+	TwoDTable::iterator it = find(curr);
+	if (it == end()) return;
+	it->second->max(next);
+}
+
 
 OneDTable::OneDTable()
 {
@@ -164,3 +171,13 @@ bool OneDTable::rand(unsigned long& next)
   return false;
 }
 
+void OneDTable::max(unsigned long& next)
+{
+	unsigned long idx = 0;
+	for (OneDTable::iterator it = begin(); it != end(); it++) {
+		idx = it->first;
+		if (it == begin() || it->second > (*this)[next]) {
+			next = idx;
+		}
+	}
+}

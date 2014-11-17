@@ -234,8 +234,6 @@ void Hmm::baumWelch(vector<vector<unsigned long>*>& sequences, int iterations)
       // accumulate the pseudo counts
       totalLogProb += getPseudoCounts(counts);
       reset();
-      if ((i+1)%1000==0)
-	cerr << "Processed " << i+1 << " sequences" << endl;
     }
     cerr << "Iteration " << k+1 << ' ' << "totalLogProb=" << totalLogProb << endl;
     if (prevTotalLogProb!=0 && (totalLogProb - prevTotalLogProb<0.1))
@@ -559,10 +557,11 @@ unsigned long Hmm::predictMax(unsigned int t) {
 	viterbi(transitions);
 	unsigned long state = transitions.back()->_to->state(), next, obs;
 	for (unsigned int i = 1; i < t; i++) {
-		_transition.rand(state, next);
+		_transition.max(state, next);
 		state = next;
 	}
-	_emission.rand(state, obs);
+
+	_emission.max(state, obs);
 	return atoi(getStr(obs).c_str());
 }
 

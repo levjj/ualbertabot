@@ -49,7 +49,7 @@ void testhmm(string race, int index)
 	cout << "Replay length: " << replay->size() << endl;
 	unsigned int missed = 0;
 	for (vector<unsigned long>::iterator it = replay->begin(); it != replay->end(); it++) {
-		int prediction = hmm.predictMax(0);
+		int prediction = hmm.predictMax(1);
 		cout << "Prediction: ";
 		cout.width(4);
 		cout << prediction << " Actual: ";
@@ -75,16 +75,12 @@ int main(int argc, char* argv[])
 
     testhmm("P", 5);
     
-	//if (argc > 1) {
-	//	testhmm("P", atoi(argv[1]));
+	//if (argc == 3) {
+	//	testhmm(argv[1], atoi(argv[2]));
 	//}
 	//else {
-	//	//system("time /t");
-	//	//trainhmm("P", 8, 128);
 	//	system("time /t");
-	//	trainhmm("T", 8, 128);
-	//	system("time /t");
-	//	trainhmm("Z", 8, 128);
+	//	trainhmm(argv[1], 32, 128);
 	//	system("time /t");
 	//}
 
