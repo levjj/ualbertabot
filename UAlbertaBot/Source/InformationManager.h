@@ -41,6 +41,8 @@ class InformationManager {
 
     Hmm                                 hmm;
     BuildingStats                       stats;
+    unsigned long                       current_enemy_state;
+    unsigned long                       predicted_enemy_state;
 
 public:
 

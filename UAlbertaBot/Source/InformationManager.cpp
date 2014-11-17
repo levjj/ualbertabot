@@ -14,15 +14,17 @@ InformationManager::InformationManager()
 
     //BWAPI::Broodwar->printf("InformationManager constructor");
 
-    // load HMM's
+    // load HMM
     char race_c = BWAPI::Broodwar->enemy()->getRace().getName().c_str()[0];
     string race = " ";
     race[0] = race_c;
     hmm.loadFromRace(race);
 
+    // load states file
     string file = "?/stats.csv";
     file[0] = race_c;
     stats.readStatsFile(file);
+    current_enemy_state = predicted_enemy_state = 0;
 }
 
 // get an instance of this
@@ -38,9 +40,11 @@ void InformationManager::update()
 	updateBaseLocationInfo();
 	map.setUnitData(BWAPI::Broodwar);
 	map.setBuildingData(BWAPI::Broodwar);
-    // make a list of opponent buildings
+
+    BWAPI::Broodwar->drawTextScreen(205, 344, "closest %d predicted %d", current_enemy_state, predicted_enemy_state);
+    if (BWAPI::Broodwar->getFrameCount() % 300)
+        return;
     vector<string> target;
-    // for each unit in the queue
     BOOST_FOREACH(BWAPI::UnitType t, BWAPI::UnitTypes::allUnitTypes()) {
         int numUnits = enemyUnitData.getNumUnits(t);
         int numDeadUnits = enemyUnitData.getNumDeadUnits(t);
@@ -48,6 +52,7 @@ void InformationManager::update()
         if (numUnits > 0) {
             if (t.isBuilding()) {
                 string building = t.getName();
+                // Protoss buildings
                 if (building.find("Assim")          != string::npos) target.push_back("Assimilator");
                 if (building.find("Gateway")        != string::npos) target.push_back("Gateway");
                 if (building.find("Cyber")          != string::npos) target.push_back("Cybernetics Core");
@@ -61,13 +66,43 @@ void InformationManager::update()
                 if (building.find("Stargate")       != string::npos) target.push_back("Stargate");
                 if (building.find("Templar")        != string::npos) target.push_back("Templar Archives");
                 if (building.find("Support")        != string::npos) target.push_back("Robotics Support Bay");
+                // Terran buildings
+                if (building.find("Barracks") != string::npos) target.push_back("Barracks");
+                if (building.find("Academy") != string::npos) target.push_back("Academy");
+                if (building.find("Command Center") != string::npos) target.push_back("Command Center");
+                if (building.find("Armory") != string::npos) target.push_back("Armory");
+                if (building.find("Refinery") != string::npos) target.push_back("Refinery");
+                if (building.find("Factory") != string::npos) target.push_back("Factory");
+                if (building.find("Engineering Bay") != string::npos) target.push_back("Engineering Bay");
+                if (building.find("Control Tower") != string::npos) target.push_back("Control Tower");
+                if (building.find("ComSat") != string::npos) target.push_back("ComSat");
+                if (building.find("Control Tower") != string::npos) target.push_back("Control Tower");
+                if (building.find("Covert Ops") != string::npos) target.push_back("Covert Ops");
+                if (building.find("Machine Shop") != string::npos) target.push_back("Machine Shop");
+                if (building.find("Nuclear Silo") != string::npos) target.push_back("Nuclear Silo");
+                if (building.find("Science Facility") != string::npos) target.push_back("Science Facility");
+                if (building.find("Starport") != string::npos) target.push_back("Starport");
+                // Zerg buildings
+                if (building.find("Spawning Pool") != string::npos) target.push_back("Spawning Pool");
+                if (building.find("Hatchery") != string::npos) target.push_back("Hatchery");
+                if (building.find("Spire") != string::npos) target.push_back("Spire");
+                if (building.find("Evolution Chamber") != string::npos) target.push_back("Evolution Chamber");
+                if (building.find("Extractor") != string::npos) target.push_back("Extractor");
+                if (building.find("Hydralisk Den") != string::npos) target.push_back("Hydralisk Den");
+                if (building.find("Queens Nest") != string::npos) target.push_back("Queens Nest");
+                if (building.find("Ultralisk Cavern") != string::npos) target.push_back("Ultralisk Cavern");
+                if (building.find("Defiler Mound") != string::npos) target.push_back("Defiler Mound");
             }
         }
     }
-    int state = stats.getClosestState(target) + 1;
-    BWAPI::Broodwar->printf("InformationManager: closet state is %d", state);
+    unsigned int state = stats.getClosestState(target) + 1;
     hmm.observe(state);
-    unsigned long predicted_state = hmm.predictMax(1); // predict state in next 12.6s
+    unsigned int predicted_state = hmm.predictMax(1); // predict state in next 12.6s
+    if (state != current_enemy_state || predicted_state != predicted_enemy_state) {
+        current_enemy_state = state;
+        predicted_enemy_state = predicted_state;
+        BWAPI::Broodwar->printf("InformationManager: closest %d predicted %d", current_enemy_state, predicted_enemy_state);
+    }
 }
 
 void InformationManager::updateUnitInfo() 
