@@ -457,7 +457,7 @@ void Hmm::genSeq(vector<unsigned long>& seq)
 
 // Returns the number of observations in the stats.csv file
 int Hmm::numObservations(string race) {
-	ifstream stats(race + "/stats.csv");
+	ifstream stats((race + "/stats.csv").c_str());
 	string line;
 	int result = 0;
 	while (getline(stats, line))
@@ -469,11 +469,11 @@ int Hmm::numObservations(string race) {
 
 void Hmm::makeEmitAndTransFiles(string race, int num_states) {
 	int num_emits = numObservations(race);
-	ofstream transfile(race + "/hmm.trans");
+	ofstream transfile((race + "/hmm.trans").c_str());
 	transfile << "S1" << endl;
 	for (int i = 1; i <= num_states; ++i) {
 		for (int j = i; j <= num_states; ++j) {
-			float prob = (i == j) ? 0.5 : 0.5 / (num_states - i);
+			double prob = (i == j) ? 0.5 : 0.5 / (num_states - i);
 			transfile << "S" << i << " S" << j << " " << prob << endl;
 		}
 	}
@@ -499,8 +499,8 @@ vector<double>* Hmm::getCurrentPD() {
 	vector<double>* result = new vector<double>();
 	if (_timeSlots.empty()) {
 		result->push_back(0.0);
-		for (int i = 1; i < _transition.size(); i++) {
-			result->push_back(-INFINITY);
+		for (unsigned int i = 1; i < _transition.size(); i++) {
+			result->push_back(-DBL_MAX);
 		}
 	}
 	else {
@@ -515,7 +515,11 @@ vector<double>* Hmm::getCurrentPD() {
 }
 
 void Hmm::observe(unsigned long state) {
-	this->addObservation(to_string(state));
+    stringstream ss;
+    string s;
+    ss << state;
+    ss >> s;
+	this->addObservation(s);
 }
 
 vector<double>* Hmm::predict(unsigned int t) {
@@ -526,9 +530,9 @@ vector<double>* Hmm::predict(unsigned int t) {
 
 	// Predict with the emission vector E
 	vector<double>* result = new vector<double>();
-	for (int i = 0; i < _emission.at(0)->size(); i++) {
+	for (unsigned int i = 0; i < _emission[0]->size(); i++) {
 		double em = 0;
-		for (int st = 0; st < current->size(); st++) {
+		for (unsigned int st = 0; st < current->size(); st++) {
 			em += exp(current->at(st) + _emission.get(_transition.size() + i, st));
 		}
 		result->push_back(em);
@@ -554,7 +558,7 @@ unsigned long Hmm::predictMax(unsigned int t) {
 	vector<Transition*> transitions;
 	viterbi(transitions);
 	unsigned long state = transitions.back()->_to->state(), next, obs;
-	for (int i = 1; i < t; i++) {
+	for (unsigned int i = 1; i < t; i++) {
 		_transition.rand(state, next);
 		state = next;
 	}
@@ -629,7 +633,7 @@ int BuildingStats::getClosestState(vector<string> buildings) {
         }
 
     int smallest_state_index = 0;
-    int smallest_state_size = 999;
+    int unsigned smallest_state_size = 999;
     for (int i = 0; i != valid_states.size(); ++i)
         if (valid_states[i] && sets[i].size() < smallest_state_size) {
             smallest_state_index = i;

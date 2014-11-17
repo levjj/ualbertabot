@@ -6,14 +6,12 @@ using namespace std;
 #include "hmm.h"
 #include <cmath>
 
-void test();
-
 void trainhmm(string race, int numStates, int maxIterations)
 {
 	Hmm hmm;
 	hmm.makeEmitAndTransFiles(race, numStates);
 	hmm.loadFromRace(race);
-	ifstream istrm(race + "/data.csv");
+	ifstream istrm((race + "/data.csv").c_str());
 
 	vector<vector<unsigned long>*> trainingSequences;
 	hmm.readSeqs(istrm, trainingSequences);
@@ -23,8 +21,8 @@ void trainhmm(string race, int numStates, int maxIterations)
 
 vector<unsigned long>* loadReplayData(string race, int idx) {
 	vector<unsigned long>* result = new vector<unsigned long>();
-	ifstream istrm(race + "/data.csv");
-	string line;
+    ifstream istrm((race + "/data.csv").c_str());
+    string line;
 	for (int i = 0; i <= idx; i++) {
 		getline(istrm, line);
 	}
@@ -74,19 +72,21 @@ int main(int argc, char* argv[])
     search.push_back("Assimilator");
     search.push_back("Gateway");
     int state = stats.getClosestState(search);
+
+    testhmm("P", 5);
     
-	if (argc > 1) {
-		testhmm("P", atoi(argv[1]));
-	}
-	else {
-		//system("time /t");
-		//trainhmm("P", 8, 128);
-		system("time /t");
-		trainhmm("T", 8, 128);
-		system("time /t");
-		trainhmm("Z", 8, 128);
-		system("time /t");
-	}
+	//if (argc > 1) {
+	//	testhmm("P", atoi(argv[1]));
+	//}
+	//else {
+	//	//system("time /t");
+	//	//trainhmm("P", 8, 128);
+	//	system("time /t");
+	//	trainhmm("T", 8, 128);
+	//	system("time /t");
+	//	trainhmm("Z", 8, 128);
+	//	system("time /t");
+	//}
 
     system("pause");
 }

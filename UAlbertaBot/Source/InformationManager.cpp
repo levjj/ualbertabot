@@ -66,6 +66,8 @@ void InformationManager::update()
     }
     int state = stats.getClosestState(target) + 1;
     BWAPI::Broodwar->printf("InformationManager: closet state is %d", state);
+    hmm.observe(state);
+    unsigned long predicted_state = hmm.predictMax(1); // predict state in next 12.6s
 }
 
 void InformationManager::updateUnitInfo() 
