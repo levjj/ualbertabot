@@ -33,6 +33,7 @@ public:
   /** Randomly generate the next value according to the probabilities
       in this table. Return true if the next value is filled. */
   bool rand(unsigned long& next);
+  void max(unsigned long& next);
   ~OneDTable() {}
 };
 
@@ -66,6 +67,8 @@ public:
   /** Randomly generate the next value according to the probabilities
       in this table. Return true if the next value is filled. */
   bool rand(unsigned long curr, unsigned long& next);
+
+  void max(unsigned long curr, unsigned long& next);
 
   ~TwoDTable();
 };
