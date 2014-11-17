@@ -107,9 +107,6 @@ class Hmm {
       the current model.  */
   double getPseudoCounts(PseudoCounts& counts);
 
-  /** Creates emission and transition probability files */
-  void makeEmitAndTransFiles(string race, int num_states, int num_emits);
-
   /** Returns the number of observations in the stats.csv file */
   int numObservations(string race);
 
@@ -184,18 +181,30 @@ public:
       according to the model. */
   void genSeq(vector<unsigned long>& seq);
 
+<<<<<<< HEAD
   /** Returns a new HMM with the saved probabilities
       Use create=true to reset the files */
   void loadFromRace(string race, bool create = false);
+=======
+  /** Creates emission and transition probability files */
+  void makeEmitAndTransFiles(string race, int num_states);
+
+  /** Returns a new HMM with the saved probabilities */
+  void loadFromRace(string race);
+>>>>>>> upstream/master
 
   /** Adds an observation and update the current internal state */
-  void observe(int state);
+  void observe(unsigned long state);
 
-  /** Predict's the state n steps in advance.
+  /** Predicts the state n steps in advance.
       (t=0) -> current state
 	  (t=1) -> 12.6s in the future ...
 	  Returns posterior probability distribution over possible states.*/
-  vector<double>* predict(int t);
+  vector<double>* predict(unsigned int t);
+
+  /** Predicts the state n steps in advances.
+      Only returns the index of the most likely state. */
+  unsigned long predictMax(unsigned int t);
 
   Hmm();
   ~Hmm();

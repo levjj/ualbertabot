@@ -22,8 +22,13 @@ class Race:
 
     # Write one full game to data.csv
     def write(self, lst):
+        first = true
         for i in lst:
-            self.data.write(str(i) + ',')
+            if first:
+               first = false
+            else:
+               self.data.write(',')
+            self.data.write(str(i))
         self.data.write('\r\n')
 
     # Write the mapping from codes to building sets to stats.csv

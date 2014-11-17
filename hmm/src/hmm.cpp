@@ -238,7 +238,7 @@ void Hmm::baumWelch(vector<vector<unsigned long>*>& sequences, int iterations)
 	cerr << "Processed " << i+1 << " sequences" << endl;
     }
     cerr << "Iteration " << k+1 << ' ' << "totalLogProb=" << totalLogProb << endl;
-    if (prevTotalLogProb!=0 && (totalLogProb - prevTotalLogProb<1))
+    if (prevTotalLogProb!=0 && (totalLogProb - prevTotalLogProb<0.1))
       break;
     else
       prevTotalLogProb = totalLogProb;
@@ -455,12 +455,34 @@ void Hmm::genSeq(vector<unsigned long>& seq)
   }
 }
 
+<<<<<<< HEAD
 void Hmm::makeEmitAndTransFiles(string race, int num_states, int num_emits) {
 	ofstream transfile((race + "/hmm.trans").c_str());
 	transfile << "S1" << endl;
 	for (int i = 1; i <= num_states; ++i) {
 		for (int j = i; j <= num_states; ++j) {
 			double prob = 1.0 / (num_states - i + 1);
+=======
+// Returns the number of observations in the stats.csv file
+int Hmm::numObservations(string race) {
+	ifstream stats(race + "/stats.csv");
+	string line;
+	int result = 0;
+	while (getline(stats, line))
+	{
+		result++;
+	}
+	return result;
+}
+
+void Hmm::makeEmitAndTransFiles(string race, int num_states) {
+	int num_emits = numObservations(race);
+	ofstream transfile(race + "/hmm.trans");
+	transfile << "S1" << endl;
+	for (int i = 1; i <= num_states; ++i) {
+		for (int j = i; j <= num_states; ++j) {
+			float prob = (i == j) ? 0.5 : 0.5 / (num_states - i);
+>>>>>>> upstream/master
 			transfile << "S" << i << " S" << j << " " << prob << endl;
 		}
 	}
@@ -476,6 +498,7 @@ void Hmm::makeEmitAndTransFiles(string race, int num_states, int num_emits) {
 	emitfile.close();
 }
 
+<<<<<<< HEAD
 // Returns the number of observations in the stats.csv file
 int Hmm::numObservations(string race) {
 	ifstream stats((race + "/stats.csv").c_str());
@@ -488,46 +511,84 @@ int Hmm::numObservations(string race) {
 	return result;
 }
 
+=======
+>>>>>>> upstream/master
 // Returns a new HMM with the saved probabilities
 // Use create=true to reset the files 
-void Hmm::loadFromRace(string race, bool create) {
-	if (create) {
-		this->makeEmitAndTransFiles(race, 20, this->numObservations(race));
-	}
+void Hmm::loadFromRace(string race) {
 	this->loadProbs(race + "/hmm");
 }
 
 vector<double>* Hmm::getCurrentPD() {
-	this->forward();
-	TimeSlot* last = _timeSlots[_timeSlots.size() - 1];
-	vector<double> *alphaT = new vector<double>();
-	for (TimeSlot::iterator it = last->begin(); it != last->end(); it++) {
-		alphaT->push_back((*it)->logAlpha());
+	vector<double>* result = new vector<double>();
+	if (_timeSlots.empty()) {
+		result->push_back(0.0);
+		for (int i = 1; i < _transition.size(); i++) {
+			result->push_back(-INFINITY);
+		}
 	}
-	return alphaT;
+	else {
+		this->forward();
+		TimeSlot* last = _timeSlots[_timeSlots.size() - 1];
+
+		for (TimeSlot::iterator it = last->begin(); it != last->end(); it++) {
+			result->push_back((*it)->logAlpha());
+		}
+	}
+	return result;
 }
 
+<<<<<<< HEAD
 void Hmm::observe(int state) {
 	//this->addObservation(to_string(state));
+=======
+void Hmm::observe(unsigned long state) {
+	this->addObservation(to_string(state));
+>>>>>>> upstream/master
 }
 
-vector<double>* Hmm::predict(int t) {
+vector<double>* Hmm::predict(unsigned int t) {
 	vector<double>* current = this->getCurrentPD();
-	return current;
-	/* TODO: Make t transitions and then predict with the emission vector E
+	// Make t transitions
 
-	for (int i = 0; i < t; i++) {
-		
-	}
-	
-	vector<double>* result = new vector<double*>();
-	for (int i = 0; i < this->  ; i++) {
-	for (int i = 0; i < n; i++) {
+	//for (int i = 0; i < t; i++) { }
+
+	// Predict with the emission vector E
+	vector<double>* result = new vector<double>();
+	for (int i = 0; i < _emission.at(0)->size(); i++) {
 		double em = 0;
+		for (int st = 0; st < current->size(); st++) {
+			em += exp(current->at(st) + _emission.get(_transition.size() + i, st));
+		}
 		result->push_back(em);
 	}
 	delete current;
-	return result;*/
+	return result;
+}
+
+/*unsigned long Hmm::predictMax(unsigned int t) {
+	vector<double>* dist = predict(t);
+	unsigned long max = 0;
+	for (int i = 1; i < dist->size(); i++) {
+		if (dist->at(i) > dist->at(max)) max = i;
+	}
+	delete dist;
+	return atoi(getStr(max).c_str()) + 1;
+}*/
+
+unsigned long Hmm::predictMax(unsigned int t) {
+	if (_timeSlots.empty()) {
+		return 1;
+	}
+	vector<Transition*> transitions;
+	viterbi(transitions);
+	unsigned long state = transitions.back()->_to->state(), next, obs;
+	for (int i = 1; i < t; i++) {
+		_transition.rand(state, next);
+		state = next;
+	}
+	_emission.rand(state, obs);
+	return atoi(getStr(obs).c_str());
 }
 
 void PseudoCounts::print(Str2IdMap& str2id)
