@@ -14,6 +14,8 @@
 
 #include "str2idmap.h"
 #include "tables.h"
+#include <vector>
+#include <string>
 
 class HmmNode;
 class Hmm;
@@ -184,7 +186,7 @@ public:
 
   /** Returns a new HMM with the saved probabilities
       Use create=true to reset the files */
-  void loadFromRace(string race, bool create);
+  void loadFromRace(string race, bool create = false);
 
   /** Adds an observation and update the current internal state */
   void observe(int state);
@@ -197,4 +199,13 @@ public:
 
   Hmm();
   ~Hmm();
+};
+
+class BuildingStats
+{
+    vector<vector<string>> sets;
+
+public:
+    void readStatsFile(string filename);
+    int getClosestState(vector<string> buildings);
 };

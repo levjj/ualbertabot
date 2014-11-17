@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <sstream>
 using namespace std; 
 
 #include "hmm.h"
@@ -11,7 +12,7 @@ void trainhmm(string race, int maxIterations)
 {
 	Hmm hmm;
 	hmm.loadFromRace(race, true);
-	ifstream istrm(race + "/data.csv");
+	ifstream istrm((race + "/data.csv").c_str());
 
 	vector<vector<unsigned long>*> trainingSequences;
 	hmm.readSeqs(istrm, trainingSequences);
@@ -21,16 +22,26 @@ void trainhmm(string race, int maxIterations)
 
 int main(int argc, char* argv[])
 {
-	for (int i = 1; i <= 128; i <<= 1) {
-		cout << "s/i=" << i << endl;
-		system("time /t");
-		trainhmm("P", i);
-		system("time /t");
-		trainhmm("T", i);
-		system("time /t");
-		trainhmm("Z", i);
-		system("time /t");
-	}
+    Hmm hmm;
+    hmm.loadFromRace("P");
+    BuildingStats stats;
+
+    stats.readStatsFile("P/stats.csv");
+    vector<string> search;
+    search.push_back("Assimilator");
+    search.push_back("Gateway");
+    int state = stats.getClosestState(search);
+    
+    //for (int i = 1; i <= 128; i <<= 1) {
+	//	cout << "s/i=" << i << endl;
+	//	system("time /t");
+	//	trainhmm("P", i);
+	//	system("time /t");
+	//	trainhmm("T", i);
+	//	system("time /t");
+	//	trainhmm("Z", i);
+	//	system("time /t");
+	//}
 
     system("pause");
 }

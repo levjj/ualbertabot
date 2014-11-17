@@ -456,20 +456,20 @@ void Hmm::genSeq(vector<unsigned long>& seq)
 }
 
 void Hmm::makeEmitAndTransFiles(string race, int num_states, int num_emits) {
-	ofstream transfile(race + "/hmm.trans");
+	ofstream transfile((race + "/hmm.trans").c_str());
 	transfile << "S1" << endl;
 	for (int i = 1; i <= num_states; ++i) {
 		for (int j = i; j <= num_states; ++j) {
-			float prob = 1.0 / (num_states - i + 1);
+			double prob = 1.0 / (num_states - i + 1);
 			transfile << "S" << i << " S" << j << " " << prob << endl;
 		}
 	}
 	transfile.close();
 
-	ofstream emitfile(race + "/hmm.emit");
+	ofstream emitfile((race + "/hmm.emit").c_str());
 	for (int i = 1; i <= num_states; ++i) {
 		for (int j = 1; j <= num_emits; ++j) {
-			float prob = 1.0 / num_emits;
+			double prob = 1.0 / num_emits;
 			emitfile << "S" << i << " " << j << " " << prob << endl;
 		}
 	}
@@ -478,7 +478,7 @@ void Hmm::makeEmitAndTransFiles(string race, int num_states, int num_emits) {
 
 // Returns the number of observations in the stats.csv file
 int Hmm::numObservations(string race) {
-	ifstream stats(race + "/stats.csv");
+	ifstream stats((race + "/stats.csv").c_str());
 	string line;
 	int result = 0;
 	while (getline(stats, line))
@@ -508,7 +508,7 @@ vector<double>* Hmm::getCurrentPD() {
 }
 
 void Hmm::observe(int state) {
-	this->addObservation(to_string(state));
+	//this->addObservation(to_string(state));
 }
 
 vector<double>* Hmm::predict(int t) {
@@ -542,4 +542,63 @@ void PseudoCounts::print(Str2IdMap& str2id)
   _stateCount.save(cerr, str2id);
   cerr << "*********************" << endl;
   cerr << "INIT-PROBS"<<endl;
+}
+
+void BuildingStats::readStatsFile(string filename) {
+    sets.clear();
+    ifstream infile(filename.c_str());
+    string line;
+    if (infile.is_open()) {
+        while (getline(infile, line)) {
+            vector<string> buildings;
+            size_t start = line.find('[');
+            size_t end = line.find(']');
+            if (end == start + 1) {
+                buildings.push_back("");
+                sets.push_back(buildings);
+                continue;
+            }
+            line = line.substr(start + 1, end - start - 1);
+            do {
+                start = line.find('\'');
+                end = line.find('\'', start + 1);
+                string building = line.substr(start + 1, end - start - 1);
+                buildings.push_back(building);
+                line = line.substr(end + 1);
+            } while (line.find(',') != string::npos);
+            sets.push_back(buildings);
+        }
+        infile.close();
+    }
+}
+
+// returns the closest state number given a set of buildings
+// this should be the smallest subset
+// currently it just returns the first set that is valid
+int BuildingStats::getClosestState(vector<string> buildings) {
+    vector<bool> valid_states;
+    valid_states.resize(sets.size());
+    for (int i = 0; i != valid_states.size(); ++i)
+        valid_states[i] = true;
+
+    // if a state does not contain all the buildings, invalidate it
+    for (int target_index = 0; target_index != buildings.size(); ++target_index) {
+        for (unsigned int state = 0; state != sets.size(); ++state) {
+            if (!valid_states[state])
+                continue;
+            bool match = false;
+            for (int building_index = 0; building_index != sets[state].size(); ++ building_index) {
+                if (sets[state][building_index] == buildings[target_index]) {
+                    match = true;
+                    break;
+                }
+            }
+            if (!match)
+                valid_states[state] = false;
+        }
+    }
+
+    for (unsigned int i = 0; i != valid_states.size(); ++i)
+        if (valid_states[i])
+            return i;
 }
