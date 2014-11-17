@@ -582,23 +582,26 @@ int BuildingStats::getClosestState(vector<string> buildings) {
         valid_states[i] = true;
 
     // if a state does not contain all the buildings, invalidate it
-    for (int target_index = 0; target_index != buildings.size(); ++target_index) {
+    for (int target_index = 0; target_index != buildings.size(); ++target_index)
         for (unsigned int state = 0; state != sets.size(); ++state) {
             if (!valid_states[state])
                 continue;
             bool match = false;
-            for (int building_index = 0; building_index != sets[state].size(); ++ building_index) {
+            for (int building_index = 0; building_index != sets[state].size(); ++ building_index)
                 if (sets[state][building_index] == buildings[target_index]) {
                     match = true;
                     break;
                 }
-            }
             if (!match)
                 valid_states[state] = false;
         }
-    }
 
-    for (unsigned int i = 0; i != valid_states.size(); ++i)
-        if (valid_states[i])
-            return i;
+    int smallest_state_index = 0;
+    int smallest_state_size = 999;
+    for (int i = 0; i != valid_states.size(); ++i)
+        if (valid_states[i] && sets[i].size() < smallest_state_size) {
+            smallest_state_index = i;
+            smallest_state_size = sets[i].size();
+        }
+    return smallest_state_index;
 }
