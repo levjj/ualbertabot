@@ -455,14 +455,6 @@ void Hmm::genSeq(vector<unsigned long>& seq)
   }
 }
 
-<<<<<<< HEAD
-void Hmm::makeEmitAndTransFiles(string race, int num_states, int num_emits) {
-	ofstream transfile((race + "/hmm.trans").c_str());
-	transfile << "S1" << endl;
-	for (int i = 1; i <= num_states; ++i) {
-		for (int j = i; j <= num_states; ++j) {
-			double prob = 1.0 / (num_states - i + 1);
-=======
 // Returns the number of observations in the stats.csv file
 int Hmm::numObservations(string race) {
 	ifstream stats(race + "/stats.csv");
@@ -482,7 +474,6 @@ void Hmm::makeEmitAndTransFiles(string race, int num_states) {
 	for (int i = 1; i <= num_states; ++i) {
 		for (int j = i; j <= num_states; ++j) {
 			float prob = (i == j) ? 0.5 : 0.5 / (num_states - i);
->>>>>>> upstream/master
 			transfile << "S" << i << " S" << j << " " << prob << endl;
 		}
 	}
@@ -498,21 +489,6 @@ void Hmm::makeEmitAndTransFiles(string race, int num_states) {
 	emitfile.close();
 }
 
-<<<<<<< HEAD
-// Returns the number of observations in the stats.csv file
-int Hmm::numObservations(string race) {
-	ifstream stats((race + "/stats.csv").c_str());
-	string line;
-	int result = 0;
-	while (getline(stats, line))
-	{
-		result++;
-	}
-	return result;
-}
-
-=======
->>>>>>> upstream/master
 // Returns a new HMM with the saved probabilities
 // Use create=true to reset the files 
 void Hmm::loadFromRace(string race) {
@@ -538,13 +514,8 @@ vector<double>* Hmm::getCurrentPD() {
 	return result;
 }
 
-<<<<<<< HEAD
-void Hmm::observe(int state) {
-	//this->addObservation(to_string(state));
-=======
 void Hmm::observe(unsigned long state) {
 	this->addObservation(to_string(state));
->>>>>>> upstream/master
 }
 
 vector<double>* Hmm::predict(unsigned int t) {

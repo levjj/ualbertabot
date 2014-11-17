@@ -181,17 +181,11 @@ public:
       according to the model. */
   void genSeq(vector<unsigned long>& seq);
 
-<<<<<<< HEAD
-  /** Returns a new HMM with the saved probabilities
-      Use create=true to reset the files */
-  void loadFromRace(string race, bool create = false);
-=======
   /** Creates emission and transition probability files */
   void makeEmitAndTransFiles(string race, int num_states);
 
   /** Returns a new HMM with the saved probabilities */
   void loadFromRace(string race);
->>>>>>> upstream/master
 
   /** Adds an observation and update the current internal state */
   void observe(unsigned long state);

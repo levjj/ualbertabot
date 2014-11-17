@@ -11,14 +11,9 @@ void test();
 void trainhmm(string race, int numStates, int maxIterations)
 {
 	Hmm hmm;
-<<<<<<< HEAD
-	hmm.loadFromRace(race, true);
-	ifstream istrm((race + "/data.csv").c_str());
-=======
 	hmm.makeEmitAndTransFiles(race, numStates);
 	hmm.loadFromRace(race);
 	ifstream istrm(race + "/data.csv");
->>>>>>> upstream/master
 
 	vector<vector<unsigned long>*> trainingSequences;
 	hmm.readSeqs(istrm, trainingSequences);
@@ -70,7 +65,6 @@ void testhmm(string race, int index)
 
 int main(int argc, char* argv[])
 {
-<<<<<<< HEAD
     Hmm hmm;
     hmm.loadFromRace("P");
     BuildingStats stats;
@@ -81,17 +75,6 @@ int main(int argc, char* argv[])
     search.push_back("Gateway");
     int state = stats.getClosestState(search);
     
-    //for (int i = 1; i <= 128; i <<= 1) {
-	//	cout << "s/i=" << i << endl;
-	//	system("time /t");
-	//	trainhmm("P", i);
-	//	system("time /t");
-	//	trainhmm("T", i);
-	//	system("time /t");
-	//	trainhmm("Z", i);
-	//	system("time /t");
-	//}
-=======
 	if (argc > 1) {
 		testhmm("P", atoi(argv[1]));
 	}
@@ -104,7 +87,6 @@ int main(int argc, char* argv[])
 		trainhmm("Z", 8, 128);
 		system("time /t");
 	}
->>>>>>> upstream/master
 
     system("pause");
 }
