@@ -5,6 +5,30 @@ using namespace std;
 
 #include "hmm.h"
 #include <cmath>
+#include <windows.h>
+
+// helper class
+class color {
+public:
+	color(WORD val) : m_val(val) { }
+
+	void set() const {
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), m_val);
+	}
+
+private:
+	WORD m_val;
+};
+
+static const color red(4);
+static const color green(2);
+static const color white(7);
+
+// overload operator<< to get manipulator to work
+inline std::ostream& operator<<(std::ostream& os, const color& c) {
+	c.set();
+	return os;
+}
 
 void trainhmm(string race, int numStates, int maxIterations)
 {
@@ -46,43 +70,58 @@ void testhmm(string race, int index)
 	Hmm hmm;
 	hmm.loadFromRace(race);
 	vector<unsigned long>* replay = loadReplayData(race, index);
-	cout << "Replay length: " << replay->size() << endl;
-	unsigned int missed = 0;
+	cout << "Replay length: " << replay->size() << endl << "Replay:       ";
 	for (vector<unsigned long>::iterator it = replay->begin(); it != replay->end(); it++) {
-		int prediction = hmm.predictMax(1);
-		cout << "Prediction: ";
-		cout.width(4);
-		cout << prediction << " Actual: ";
-		cout.width(4);
-		cout << (*it) << endl;
-		if (prediction != *it) missed++;
-		hmm.observe(*it);
+		cout.width(3); cout << (*it);
 	}
-	cout << "Accuracy: " << (1.0 - missed / (double)replay->size()) << endl;
+	for (int i = 0; i < 10; i++) {
+		unsigned int missed = 0;
+		cout << endl << "Prediction(" << i << "):";
+		for (int j = 0; j < i; j++) {
+			cout.width(3);
+			cout << "-";
+		}
+		for (int j = 0; j < replay->size() - i; j++) {
+			int prediction = hmm.predictMax(i);
+			cout.width(3);
+			if (prediction != replay->at(j + i)){
+				missed++;
+				cout << red << prediction;
+			}
+			else {
+				cout << green << prediction;
+			}
+			hmm.observe(replay->at(j));
+		}
+		cout << white << "  (" << (1.0 - missed / (double)(replay->size() - i)) << ")" << endl;
+		hmm.reset();
+	}
+}
+
+void testBuildingStats() {
+	Hmm hmm;
+	hmm.loadFromRace("P");
+	BuildingStats stats;
+
+	stats.readStatsFile("P/stats.csv");
+	vector<string> search;
+	search.push_back("Assimilator");
+	search.push_back("Gateway");
+	int state = stats.getClosestState(search);
 }
 
 int main(int argc, char* argv[])
 {
-    Hmm hmm;
-    hmm.loadFromRace("P");
-    BuildingStats stats;
-
-    stats.readStatsFile("P/stats.csv");
-    vector<string> search;
-    search.push_back("Assimilator");
-    search.push_back("Gateway");
-    int state = stats.getClosestState(search);
-
-    testhmm("P", 5);
+	// testBuildingStats();
     
-	//if (argc == 3) {
-	//	testhmm(argv[1], atoi(argv[2]));
-	//}
-	//else {
-	//	system("time /t");
-	//	trainhmm(argv[1], 32, 128);
-	//	system("time /t");
-	//}
+	if (argc == 3) {
+		testhmm(argv[1], atoi(argv[2]));
+	}
+	else {
+		system("time /t");
+		trainhmm(argv[1], 32, 128);
+		system("time /t");
+	}
 
     system("pause");
 }
