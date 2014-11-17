@@ -557,7 +557,8 @@ unsigned long Hmm::predictMax(unsigned int t) {
 	viterbi(transitions);
 	unsigned long state = transitions.back()->_to->state(), next, obs;
 	for (unsigned int i = 1; i < t; i++) {
-		_transition.max(state, next);
+		_transition.rand(state, next);
+		if (next >= _transition.size()) break;
 		state = next;
 	}
 
