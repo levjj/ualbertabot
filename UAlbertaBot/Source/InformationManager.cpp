@@ -12,18 +12,10 @@ InformationManager::InformationManager()
 {
 	initializeRegionInformation();
 
-    // load HMM
-    char race_c = BWAPI::Broodwar->enemy()->getRace().getName().c_str()[0];
-    string race = " ";
-    race[0] = race_c;
-    hmm.loadFromRace(race);
-
-    // load states file
-    string file = "?/stats.csv";
-    file[0] = race_c;
-    stats.readStatsFile(file);
-
     current_enemy_state = predicted_enemy_state = 0;
+    enemy_race = BWAPI::Broodwar->enemy()->getRace().getName().c_str()[0];
+    if (enemy_race != 'U') // we know the race, so load the HMM data now
+        loadHMMdata(enemy_race);
 }
 
 // get an instance of this
@@ -33,15 +25,31 @@ InformationManager & InformationManager::Instance()
 	return instance;
 }
 
-void InformationManager::update() 
-{
-	updateUnitInfo();
-	updateBaseLocationInfo();
-	map.setUnitData(BWAPI::Broodwar);
-	map.setBuildingData(BWAPI::Broodwar);
+void InformationManager::loadHMMdata(char race_c) {
+    // load HMM
+    string race = " ";
+    race[0] = race_c;
+    hmm.loadFromRace(race);
 
-    BWAPI::Broodwar->drawTextScreen(205, 344, "closest %d predicted %d", current_enemy_state, predicted_enemy_state);
-    if (BWAPI::Broodwar->getFrameCount() % 300)
+    // load states file
+    string file = "?/stats.csv";
+    file[0] = race_c;
+    stats.readStatsFile(file);
+}
+void InformationManager::updateHMM() {
+    BWAPI::Broodwar->drawTextScreen(205, 344, "closest %d predicted %d", current_enemy_state, predicted_enemy_state); // update info on HUD
+
+    char race_c = BWAPI::Broodwar->enemy()->getRace().getName().c_str()[0];
+    if (race_c != 'U' && enemy_race == 'U') { // Race changed from unknown to known, load all the data we need for that race
+        BWAPI::Broodwar->printf("InformationManager: race changed from %d to %d", enemy_race, race_c);
+        enemy_race = race_c;
+        loadHMMdata(enemy_race);
+        // TODO: fast forward to correct time (observing state 1?)
+    }
+    return;
+    if (enemy_race == 'U') // cant continue unless we know the enemy race
+        return;
+    if (BWAPI::Broodwar->getFrameCount() % 300) // only update observation and prediction every 300 frames (12.6s)
         return;
 
     vector<string> target;
@@ -124,12 +132,22 @@ void InformationManager::update()
     }
     unsigned int state = stats.getClosestState(target);
     hmm.observe(state);
-    unsigned int predicted_state = hmm.predictMax(1); // predict state in next 12.7s
+    unsigned int predicted_state = hmm.predictMax(1); // predict state in next 12.6s
     if (state != current_enemy_state || predicted_state != predicted_enemy_state) {
         current_enemy_state = state;
         predicted_enemy_state = predicted_state;
         BWAPI::Broodwar->printf("InformationManager: closest %d predicted %d", current_enemy_state, predicted_enemy_state);
     }
+}
+
+void InformationManager::update()
+{
+	updateUnitInfo();
+	updateBaseLocationInfo();
+	map.setUnitData(BWAPI::Broodwar);
+	map.setBuildingData(BWAPI::Broodwar);
+
+    updateHMM();
 }
 
 void InformationManager::updateUnitInfo() 
