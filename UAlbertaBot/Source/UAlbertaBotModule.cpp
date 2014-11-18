@@ -27,7 +27,7 @@ void UAlbertaBotModule::onStart()
 	//BWAPI::Broodwar->setLocalSpeed(0); // Just type 0 in game will do the same thing
 
 	BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput);
-	BWAPI::Broodwar->enableFlag(BWAPI::Flag::CompleteMapInformation);
+	//BWAPI::Broodwar->enableFlag(BWAPI::Flag::CompleteMapInformation);
 
 	if (Options::Modules::USING_GAMECOMMANDER)
 	{
