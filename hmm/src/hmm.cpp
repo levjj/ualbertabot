@@ -566,7 +566,7 @@ vector<unsigned long>* Hmm::predictMaxSeq(unsigned int t) {
 		viterbi(transitions);
 	}
 	unsigned long state = transitions.back()->_to->state(), next, obs;
-	for (unsigned int i = 1; i < t; i++) {
+	for (unsigned int i = 0; i < t; i++) {
 		do {
 			_transition.rand(state, next);
 		} while (next >= _transition.size());
