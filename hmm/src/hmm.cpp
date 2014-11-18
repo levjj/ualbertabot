@@ -620,8 +620,6 @@ void BuildingStats::readStatsFile(string filename) {
 }
 
 // returns the closest state number given a set of buildings
-// this should be the smallest subset
-// currently it just returns the first set that is valid
 int BuildingStats::getClosestState(vector<string> buildings) {
     vector<bool> valid_states;
     valid_states.resize(sets.size());
@@ -650,5 +648,5 @@ int BuildingStats::getClosestState(vector<string> buildings) {
             smallest_state_index = i;
             smallest_state_size = sets[i].size();
         }
-    return smallest_state_index + 1;
+    return smallest_state_index + 1; // states start with '1'
 }

@@ -43,66 +43,88 @@ void InformationManager::update()
     BWAPI::Broodwar->drawTextScreen(205, 344, "closest %d predicted %d", current_enemy_state, predicted_enemy_state);
     if (BWAPI::Broodwar->getFrameCount() % 300)
         return;
+
     vector<string> target;
     BOOST_FOREACH(BWAPI::UnitType t, BWAPI::UnitTypes::allUnitTypes()) {
         int numUnits = enemyUnitData.getNumUnits(t);
-        int numDeadUnits = enemyUnitData.getNumDeadUnits(t);
         // if there exist units in the vector
-        if (numUnits > 0) {
-            if (t.isBuilding()) {
-                string building = t.getName();
-                // Protoss buildings
-                if (building.find("Assim")          != string::npos) target.push_back("Assimilator");
-                if (building.find("Gateway")        != string::npos) target.push_back("Gateway");
-                if (building.find("Cyber")          != string::npos) target.push_back("Cybernetics Core");
-                if (building.find("Arbiter")        != string::npos) target.push_back("Arbiter Tribunal");
-                if (building.find("Forge")          != string::npos) target.push_back("Forge");
-                if (building.find("Adun")           != string::npos) target.push_back("Citadel of Adun");
-				if (numUnits > 1) {
-					if (building.find("Nexus") != string::npos) target.push_back("Nexus");
-				}
-                if (building.find("Beacon")         != string::npos) target.push_back("Fleet Beacon");
-                if (building.find("Facility")       != string::npos) target.push_back("Robotics Facility");
-                if (building.find("Observ")         != string::npos) target.push_back("Observatory");
-                if (building.find("Stargate")       != string::npos) target.push_back("Stargate");
-                if (building.find("Templar")        != string::npos) target.push_back("Templar Archives");
-                if (building.find("Support")        != string::npos) target.push_back("Robotics Support Bay");
-                // Terran buildings
-                if (building.find("Barracks") != string::npos) target.push_back("Barracks");
-                if (building.find("Academy") != string::npos) target.push_back("Academy");
-				if (numUnits > 1) {
-					if (building.find("Command Center") != string::npos) target.push_back("Command Center");
-				}
-                if (building.find("Armory") != string::npos) target.push_back("Armory");
-                if (building.find("Refinery") != string::npos) target.push_back("Refinery");
-                if (building.find("Factory") != string::npos) target.push_back("Factory");
-                if (building.find("Engineering Bay") != string::npos) target.push_back("Engineering Bay");
-                if (building.find("Control Tower") != string::npos) target.push_back("Control Tower");
-                if (building.find("ComSat") != string::npos) target.push_back("ComSat");
-                if (building.find("Control Tower") != string::npos) target.push_back("Control Tower");
-                if (building.find("Covert Ops") != string::npos) target.push_back("Covert Ops");
-                if (building.find("Machine Shop") != string::npos) target.push_back("Machine Shop");
-                if (building.find("Nuclear Silo") != string::npos) target.push_back("Nuclear Silo");
-                if (building.find("Science Facility") != string::npos) target.push_back("Science Facility");
-                if (building.find("Starport") != string::npos) target.push_back("Starport");
-                // Zerg buildings
-                if (building.find("Spawning Pool") != string::npos) target.push_back("Spawning Pool");
-				if (numUnits > 1) {
-					if (building.find("Hatchery") != string::npos) target.push_back("Hatchery");
-				}
-                if (building.find("Spire") != string::npos) target.push_back("Spire");
-                if (building.find("Evolution Chamber") != string::npos) target.push_back("Evolution Chamber");
-                if (building.find("Extractor") != string::npos) target.push_back("Extractor");
-                if (building.find("Hydralisk Den") != string::npos) target.push_back("Hydralisk Den");
-                if (building.find("Queens Nest") != string::npos) target.push_back("Queens Nest");
-                if (building.find("Ultralisk Cavern") != string::npos) target.push_back("Ultralisk Cavern");
-                if (building.find("Defiler Mound") != string::npos) target.push_back("Defiler Mound");
-            }
+        if (numUnits > 0 && t.isBuilding()) {
+            string building = t.getName();
+            // Protoss buildings
+            if (numUnits > 1 && building.find("Nexus") != string::npos) target.push_back("Nexus");
+            if (building.find("Assim") != string::npos)                 target.push_back("Assimilator");
+            if (building.find("Gateway") != string::npos)               target.push_back("Gateway");
+            if (building.find("Cyber") != string::npos)                 target.push_back("Cybernetics Core");
+            if (building.find("Arbiter") != string::npos)               target.push_back("Arbiter Tribunal");
+            if (building.find("Forge") != string::npos)                 target.push_back("Forge");
+            if (building.find("Adun") != string::npos)                  target.push_back("Citadel of Adun");
+            if (building.find("Fleet") != string::npos)                 target.push_back("Fleet Beacon");
+            if (building.find("Robotics F") != string::npos)            target.push_back("Robotics Facility");
+            if (building.find("Observ") != string::npos)                target.push_back("Observatory");
+            if (building.find("Stargate") != string::npos)              target.push_back("Stargate");
+            if (building.find("Templar") != string::npos)               target.push_back("Templar Archives");
+            if (building.find("Support") != string::npos)               target.push_back("Robotics Support Bay");
+            // Terran buildings
+            if (numUnits > 1 && building.find("Comma") != string::npos) target.push_back("Command Center");
+            if (building.find("Barracks") != string::npos)              target.push_back("Barracks");
+            if (building.find("Academy") != string::npos)               target.push_back("Academy");
+            if (building.find("Armory") != string::npos)                target.push_back("Armory");
+            if (building.find("Refinery") != string::npos)              target.push_back("Refinery");
+            if (building.find("Factory") != string::npos)               target.push_back("Factory");
+            if (building.find("Engin") != string::npos)                 target.push_back("Engineering Bay");
+            if (building.find("ComSat") != string::npos)                target.push_back("ComSat");
+            if (building.find("Control") != string::npos)               target.push_back("Control Tower");
+            if (building.find("Covert") != string::npos)                target.push_back("Covert Ops");
+            if (building.find("Machine") != string::npos)               target.push_back("Machine Shop");
+            if (building.find("Nuclear") != string::npos)               target.push_back("Nuclear Silo");
+            if (building.find("Science") != string::npos)               target.push_back("Science Facility");
+            if (building.find("Starport") != string::npos)              target.push_back("Starport");
+            // Zerg buildings
+            if (numUnits > 1 && building.find("Hatch") != string::npos) target.push_back("Hatchery");
+            if (building.find("Spawning") != string::npos)              target.push_back("Spawning Pool");
+            if (building.find("Spire") != string::npos)                 target.push_back("Spire");
+            if (building.find("Evol") != string::npos)                  target.push_back("Evolution Chamber");
+            if (building.find("Extractor") != string::npos)             target.push_back("Extractor");
+            if (building.find("Hydra") != string::npos)                 target.push_back("Hydralisk Den");
+            if (building.find("Queen") != string::npos)                 target.push_back("Queens Nest");
+            if (building.find("Ultra") != string::npos)                 target.push_back("Ultralisk Cavern");
+            if (building.find("Defiler") != string::npos)               target.push_back("Defiler Mound");
+        }
+        if (numUnits > 0) { // if the enemy has a unit type with a prerequisite, add that prerequisite
+            string unit = t.getName();
+            // Protoss units
+            if (unit.find("Dragoon") != string::npos) target.push_back("Cybernetics Core");
+            if (unit.find("High Templar") != string::npos) target.push_back("Templar Archives");
+            if (unit.find("Archon") != string::npos) target.push_back("Templar Archives");
+            if (unit.find("Shuttle") != string::npos) target.push_back("Robotics Facility");
+            if (unit.find("Reaver") != string::npos) target.push_back("Robotics Support Bay");
+            if (unit.find("Observer") != string::npos) target.push_back("Observatory");
+            if (unit.find("Scout") != string::npos) target.push_back("Stargate");
+            if (unit.find("Carrier") != string::npos) target.push_back("Fleet Beacon");
+            if (unit.find("Arbiter") != string::npos) target.push_back("Arbiter Tribunal");
+            // Terran units
+            if (unit.find("Firebat") != string::npos) target.push_back("Academy");
+            if (unit.find("Ghost") != string::npos) { target.push_back("Academy"); target.push_back("Science Facility"); target.push_back("Covert Ops"); }
+            if (unit.find("Vulture") != string::npos) target.push_back("Factory");
+            if (unit.find("Siege Tank") != string::npos) { target.push_back("Factory"); target.push_back("Machine Shop"); }
+            if (unit.find("Goliath") != string::npos) { target.push_back("Factory"); target.push_back("Armory"); }
+            if (unit.find("Dropship") != string::npos) { target.push_back("Starport"); target.push_back("Control Tower"); }
+            if (unit.find("Wraith") != string::npos) target.push_back("Starport");
+            if (unit.find("Battlecruiser") != string::npos) { target.push_back("Starport"); target.push_back("Control Tower"); target.push_back("Science Facility"); }
+            if (unit.find("Science Vessel") != string::npos) { target.push_back("Starport"); target.push_back("Science Facility"); }
+            // Zerg units
+            if (unit.find("Zergling") != string::npos) target.push_back("Spawning Pool");
+            if (unit.find("Hydralisk") != string::npos) target.push_back("Hydralisk Den");
+            if (unit.find("Mutalisk") != string::npos) target.push_back("Spire");
+            if (unit.find("Scourge") != string::npos) target.push_back("Spire");
+            if (unit.find("Queen") != string::npos) target.push_back("Queens Nest");
+            if (unit.find("Ultralisk") != string::npos) target.push_back("Ultralisk Cavern");
+            if (unit.find("Defiler") != string::npos) target.push_back("Defiler Mound");
         }
     }
     unsigned int state = stats.getClosestState(target);
     hmm.observe(state);
-    unsigned int predicted_state = hmm.predictMax(1); // predict state in next 12.6s
+    unsigned int predicted_state = hmm.predictMax(1); // predict state in next 12.7s
     if (state != current_enemy_state || predicted_state != predicted_enemy_state) {
         current_enemy_state = state;
         predicted_enemy_state = predicted_state;
