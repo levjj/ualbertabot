@@ -90,6 +90,37 @@ void InformationManager::update()
             if (building.find("Ultra") != string::npos)                 target.push_back("Ultralisk Cavern");
             if (building.find("Defiler") != string::npos)               target.push_back("Defiler Mound");
         }
+        if (numUnits > 0) { // if the enemy has a unit type with a prerequisite, add that prerequisite
+            string unit = t.getName();
+            // Protoss units
+            if (unit.find("Dragoon") != string::npos) target.push_back("Cybernetics Core");
+            if (unit.find("High Templar") != string::npos) target.push_back("Templar Archives");
+            if (unit.find("Archon") != string::npos) target.push_back("Templar Archives");
+            if (unit.find("Shuttle") != string::npos) target.push_back("Robotics Facility");
+            if (unit.find("Reaver") != string::npos) target.push_back("Robotics Support Bay");
+            if (unit.find("Observer") != string::npos) target.push_back("Observatory");
+            if (unit.find("Scout") != string::npos) target.push_back("Stargate");
+            if (unit.find("Carrier") != string::npos) target.push_back("Fleet Beacon");
+            if (unit.find("Arbiter") != string::npos) target.push_back("Arbiter Tribunal");
+            // Terran units
+            if (unit.find("Firebat") != string::npos) target.push_back("Academy");
+            if (unit.find("Ghost") != string::npos) { target.push_back("Academy"); target.push_back("Science Facility"); target.push_back("Covert Ops"); }
+            if (unit.find("Vulture") != string::npos) target.push_back("Factory");
+            if (unit.find("Siege Tank") != string::npos) { target.push_back("Factory"); target.push_back("Machine Shop"); }
+            if (unit.find("Goliath") != string::npos) { target.push_back("Factory"); target.push_back("Armory"); }
+            if (unit.find("Dropship") != string::npos) { target.push_back("Starport"); target.push_back("Control Tower"); }
+            if (unit.find("Wraith") != string::npos) target.push_back("Starport");
+            if (unit.find("Battlecruiser") != string::npos) { target.push_back("Starport"); target.push_back("Control Tower"); target.push_back("Science Facility"); }
+            if (unit.find("Science Vessel") != string::npos) { target.push_back("Starport"); target.push_back("Science Facility"); }
+            // Zerg units
+            if (unit.find("Zergling") != string::npos) target.push_back("Spawning Pool");
+            if (unit.find("Hydralisk") != string::npos) target.push_back("Hydralisk Den");
+            if (unit.find("Mutalisk") != string::npos) target.push_back("Spire");
+            if (unit.find("Scourge") != string::npos) target.push_back("Spire");
+            if (unit.find("Queen") != string::npos) target.push_back("Queens Nest");
+            if (unit.find("Ultralisk") != string::npos) target.push_back("Ultralisk Cavern");
+            if (unit.find("Defiler") != string::npos) target.push_back("Defiler Mound");
+        }
     }
     unsigned int state = stats.getClosestState(target);
     hmm.observe(state);
