@@ -93,7 +93,7 @@ void InformationManager::update()
     }
     unsigned int state = stats.getClosestState(target);
     hmm.observe(state);
-    unsigned int predicted_state = hmm.predictMax(2); // predict state in next 25.2s
+    unsigned int predicted_state = hmm.predictMax(1); // predict state in next 12.7s
     if (state != current_enemy_state || predicted_state != predicted_enemy_state) {
         current_enemy_state = state;
         predicted_enemy_state = predicted_state;

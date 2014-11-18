@@ -24,7 +24,7 @@ Squad::update()
 		BWAPI::Unit * closest = unitClosestToEnemy();
 		if (closest && (BWAPI::Broodwar->getFrameCount() % 24 == 0))
 		{
-			BWAPI::Broodwar->setScreenPosition(closest->getPosition().x() - 320, closest->getPosition().y() - 200);
+			// BWAPI::Broodwar->setScreenPosition(closest->getPosition().x() - 320, closest->getPosition().y() - 200);
 		}
 	}
 
