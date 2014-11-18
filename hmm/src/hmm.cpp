@@ -550,20 +550,31 @@ vector<double>* Hmm::predict(unsigned int t) {
 }*/
 
 unsigned long Hmm::predictMax(unsigned int t) {
-	if (_timeSlots.empty()) {
-		return 1;
-	}
+	vector<unsigned long>* obs = predictMaxSeq(t);
+	unsigned long pred = obs->at(obs->size() - 1);
+	delete obs;
+	return pred;
+}
+
+vector<unsigned long>* Hmm::predictMaxSeq(unsigned int t) {
+	vector<unsigned long>* result = new vector<unsigned long>();
 	vector<Transition*> transitions;
-	viterbi(transitions);
+	if (_timeSlots.empty()) {
+		transitions.push_back(new Transition(NULL, new HmmNode(0, 0, this), 0));
+	}
+	else {
+		viterbi(transitions);
+	}
 	unsigned long state = transitions.back()->_to->state(), next, obs;
 	for (unsigned int i = 1; i < t; i++) {
-		_transition.rand(state, next);
-		if (next >= _transition.size()) break;
+		do {
+			_transition.rand(state, next);
+		} while (next >= _transition.size());
 		state = next;
+		_emission.max(state, obs);
+		result->push_back(atoi(getStr(obs).c_str()));
 	}
-
-	_emission.max(state, obs);
-	return atoi(getStr(obs).c_str());
+	return result;
 }
 
 void PseudoCounts::print(Str2IdMap& str2id)

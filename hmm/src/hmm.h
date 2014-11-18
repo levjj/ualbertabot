@@ -198,9 +198,13 @@ public:
 	  Returns posterior probability distribution over possible states.*/
   vector<double>* predict(unsigned int t);
 
-  /** Predicts the state n steps in advances.
+  /** Predicts the state n steps in advance.
       Only returns the index of the most likely state. */
   unsigned long predictMax(unsigned int t);
+
+  /** Predicts all the states n steps in advance.
+      (Only returns the index of the most likely state). */
+  vector<unsigned long>* predictMaxSeq(unsigned int t);
 
   Hmm();
   ~Hmm();

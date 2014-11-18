@@ -70,31 +70,33 @@ void testhmm(string race, int index)
 	Hmm hmm;
 	hmm.loadFromRace(race);
 	vector<unsigned long>* replay = loadReplayData(race, index);
-	cout << "Replay length: " << replay->size() << endl << "Replay:       ";
+	cout << "Replay length: " << replay->size() << endl << "Rep:";
 	for (vector<unsigned long>::iterator it = replay->begin(); it != replay->end(); it++) {
 		cout.width(3); cout << (*it);
 	}
-	for (int i = 0; i < 10; i++) {
-		unsigned int missed = 0;
-		cout << endl << "Prediction(" << i << "):";
-		for (int j = 0; j < i; j++) {
+	for (unsigned int i = 0; i < replay->size(); i++) {
+		unsigned int missed = 0, j;
+		cout << endl << "Pre:";
+		for (j = 0; j < i; j++) {
 			cout.width(3);
-			cout << "-";
+			cout << replay->at(j);
+			hmm.observe(replay->at(j));
 		}
-		for (int j = 0; j < replay->size() - i; j++) {
-			int prediction = hmm.predictMax(i);
+		vector<unsigned long> *seq = hmm.predictMaxSeq(replay->size() - i + 1);
+		for (unsigned int k = j; k < replay->size(); k++) {
 			cout.width(3);
-			if (prediction != replay->at(j + i)){
+			unsigned long prediction = seq->at(k - j);
+			if (prediction != replay->at(k)){
 				missed++;
 				cout << red << prediction;
 			}
 			else {
 				cout << green << prediction;
 			}
-			hmm.observe(replay->at(j));
 		}
 		cout << white << "  (" << (1.0 - missed / (double)(replay->size() - i)) << ")" << endl;
 		hmm.reset();
+		delete seq;
 	}
 }
 
