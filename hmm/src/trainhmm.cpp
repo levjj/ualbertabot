@@ -82,7 +82,7 @@ void testhmm(string race, int index)
 			cout << replay->at(j);
 			hmm.observe(replay->at(j));
 		}
-		vector<unsigned long> *seq = hmm.predictMaxSeq(replay->size() - i + 1);
+		vector<unsigned long> *seq = hmm.predictMaxSeq(replay->size() - i);
 		for (unsigned int k = j; k < replay->size(); k++) {
 			cout.width(3);
 			unsigned long prediction = seq->at(k - j);
