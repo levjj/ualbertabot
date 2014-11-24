@@ -22,14 +22,14 @@ class Race:
 
     # Write one full game to data.csv
     def write(self, lst):
-        first = true
+        first = True
         for i in lst:
             if first:
-               first = false
+               first = False
             else:
                self.data.write(',')
             self.data.write(str(i))
-        self.data.write('\r\n')
+        self.data.write('\n')
 
     # Write the mapping from codes to building sets to stats.csv
     def dump(self):
@@ -40,7 +40,7 @@ class Race:
             state_desc[value - 1] = key
         i = 1
         for desc in state_desc:
-            stats.write(str(i) + ',' + desc + '\r\n')
+            stats.write(str(i) + ',' + desc + '\n')
             i = i + 1
         stats.close()
 
@@ -68,7 +68,11 @@ class Game:
             'Sunken Colony',
             'Pylon',
             'Photon Cannon',
-            'Shield Battery']
+            'Shield Battery',
+            'SCV',
+            'Drone',
+            'Overlord',
+            'Probe']
 
     # Model the opponent of the protoss player (ignores TvZ games, etc.)
     def parsePlayers(self):
@@ -81,14 +85,24 @@ class Game:
         else:
             raise Exception("No Protoss player involved")
 
+    def getUnitType(self, action):
+        # Build action
+        if action.id == 0x0C:
+            return (action.tick, action.get_building_type())
+        # Train or Hatch action
+        if action.id == 0x1F or action.id == 0x23:
+            return (action.tick, action.get_unit_type())
+        return (-1, 0)
+
     # Go through all actions in the game and put them in 12.6s buckets
     def bucketActions(self):
         self.buckets = {}
         for action in self.player.actions:
-            if action.id == 0x0C: # Build action
-                idx = action.tick / self.bucketSize
+            tick, unittype = self.getUnitType(action)
+            if tick >= 0 and unittype not in self.ignored:
+                idx = tick / self.bucketSize
                 bucket = self.buckets.get(idx, [])
-                bucket.append(action.get_building_type())
+                bucket.append(unittype)
                 self.buckets[idx] = bucket
 
     # Generate building set codes for every 12.6s of the game and write to file
@@ -101,7 +115,7 @@ class Game:
         for step in range(max(self.buckets.keys())+1):
             bucket = self.buckets.get(step, [])
             for building in bucket:
-                if building not in buildings and building not in self.ignored:
+                if building not in buildings:
                     buildings.append(building)
             trace.append(self.race.getState(buildings))
         self.race.write(trace)

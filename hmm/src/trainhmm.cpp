@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
 	}
 	else {
 		system("time /t");
-		trainhmm(argv[1], 32, 128);
+		trainhmm(argv[1], 48, 256);
 		system("time /t");
 	}
 
