@@ -15,6 +15,7 @@
 #include "str2idmap.h"
 #include "tables.h"
 #include <vector>
+#include <set>
 #include <string>
 #include <sstream>
 #include <float.h>
@@ -215,6 +216,6 @@ class BuildingStats
     vector<vector<string>> sets;
 
 public:
-    void readStatsFile(string filename);
-    int getClosestState(vector<string> buildings);
+    void readStatsFile(const string& filename);
+    int getClosestState(const set<string>& buildings);
 };

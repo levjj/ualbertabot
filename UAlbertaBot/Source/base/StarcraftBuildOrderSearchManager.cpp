@@ -52,7 +52,7 @@ BuildOrderSearch::SearchResults StarcraftBuildOrderSearchManager::search(const s
 	if (result.solved)
 	{
 		lastSearchFinishTime = result.solutionLength;
-		//BWAPI::Broodwar->printf("%12d[opt]%9llu[nodes]%7d[ms]", result.solutionLength, result.nodesExpanded, (int)result.timeElapsed);
+		BWAPI::Broodwar->printf("%12d[opt]%9llu[nodes]%7d[ms]", result.solutionLength, result.nodesExpanded, (int)result.timeElapsed);
 	}
 	else
 	{

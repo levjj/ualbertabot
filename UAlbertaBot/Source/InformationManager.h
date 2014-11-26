@@ -39,11 +39,15 @@ class InformationManager {
 	const UnitData &					getUnitData(BWAPI::Player * player) const;
 	const UnitData &					getUnitData(BWAPI::Unit * unit) const;
 
+    // ADDED
     Hmm                                 hmm;
     BuildingStats                       stats;
     unsigned long                       current_enemy_state;
     unsigned long                       predicted_enemy_state;
     char                                enemy_race; // 'T', 'P', 'Z', or 'U'
+
+    void                                updateHMM(void);
+    void                                loadHMMdata(char);
 
 public:
 
@@ -96,9 +100,6 @@ public:
 	void						drawUnitInformation(int x, int y);
 
 	MicroSearch::Map *			getMap() { return &map; }
-
-    void                        updateHMM( void );
-    void                        loadHMMdata(char);
 };
 
 

@@ -25,7 +25,8 @@ void StrategyManager::addStrategies()
 	terranOpeningBook  = std::vector<std::string>(NumTerranStrategies);
 	zergOpeningBook    = std::vector<std::string>(NumZergStrategies);
 
-	protossOpeningBook[ProtossZealotRush]	= "0 0 0 0 1 0 0 3 0 0 3 0 1 3 0 4 4 4 4 4 1 0 4 4 4";
+    // Action numbers are defined in StarcraftData.hpp
+    protossOpeningBook[ProtossZealotRush]   = "0 0 0 0 1 0 0 3 0 0 3 0 1 3 0 4 4 4 4 4 1 0 4 4 4";
 	protossOpeningBook[ProtossDarkTemplar]	= "0 0 0 0 1 3 0 7 5 0 0 12 3 13 0 22 22 0 0";
 	protossOpeningBook[ProtossDragoons]		= "0 0 0 0 1 0 0 3 0 7 0 0 5 0 0 3 8 6 1 6 6 0 3 1 0 6 6 6";
 	terranOpeningBook[TerranMarineRush]		= "0 0 0 0 0 1 0 0 3 0 0 3 0 1 0 4 0 0 0 6";
@@ -179,7 +180,7 @@ void StrategyManager::setStrategy()
 	else
 	{
 		// otherwise return a random strategy
-		currentStrategy = ProtossZealotRush;
+        currentStrategy = ProtossZealotRush;
 	}
 
 }
@@ -608,7 +609,7 @@ const MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal() const
 const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 {
 	// the goal to return
-	std::vector< std::pair<MetaType, UnitCountType> > goal;
+    MetaPairVector goal;
 
 	int numMarines =			BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Marine);
 	int numMedics =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Medic);
@@ -618,28 +619,30 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 	int medicsWanted = numMedics + 2;
 	int wraithsWanted = numWraith + 4;
 
-	goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine,	marinesWanted));
+    goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Marine, marinesWanted));
+    goal.push_back(MetaPair(BWAPI::TechTypes::Stim_Packs, 1));
+    goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Medic, medicsWanted));
+    goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Wraith, wraithsWanted));
 
-	return (const std::vector< std::pair<MetaType, UnitCountType> >)goal;
+	return goal;
 }
 
 const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 {
-	// the goal to return
-	std::vector< std::pair<MetaType, UnitCountType> > goal;
-	
+    // the goal to return
+    MetaPairVector goal;
+
 	int numMutas  =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Mutalisk);
 	int numHydras  =			BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk);
 
 	int mutasWanted = numMutas + 6;
 	int hydrasWanted = numHydras + 6;
 
-	goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Zergling, 4));
-	//goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Stim_Packs,	1));
+    goal.push_back(MetaPair(BWAPI::UnitTypes::Zerg_Zergling, 4));
+    goal.push_back(MetaPair(BWAPI::UnitTypes::Zerg_Hydralisk, numHydras));
+    goal.push_back(MetaPair(BWAPI::UnitTypes::Zerg_Mutalisk, numMutas));
 
-	//goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Medic,		medicsWanted));
-
-	return (const std::vector< std::pair<MetaType, UnitCountType> >)goal;
+	return goal;
 }
 
  const int StrategyManager::getCurrentStrategy()
