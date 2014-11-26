@@ -39,14 +39,15 @@ class StarcraftBuildOrderSearchManager
 
 	void											setRepetitions(BuildOrderSearch::StarcraftSearchGoal goal);
 
-	void						loadOpeningBook();
-	std::vector<std::vector<MetaType>> openingBook;
-	std::vector<MetaType>		getMetaVector(std::string buildString);
-	MetaType					getMetaType(BuildOrderSearch::Action a);
+	void						                    loadOpeningBook();
+	std::vector<std::vector<MetaType>>              openingBook;
+	MetaType					                    getMetaType(BuildOrderSearch::Action a);
 	
 	StarcraftBuildOrderSearchManager();
 
 public:
+    // CHANGED moved to public for access in ProductionManager
+	std::vector<MetaType>		                    getMetaVector(std::string buildString);
 
 	static StarcraftBuildOrderSearchManager &	Instance();
 

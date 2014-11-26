@@ -591,7 +591,7 @@ void PseudoCounts::print(Str2IdMap& str2id)
   cerr << "INIT-PROBS"<<endl;
 }
 
-void BuildingStats::readStatsFile(string filename) {
+void BuildingStats::readStatsFile(const string& filename) {
     sets.clear();
     ifstream infile(filename.c_str());
     string line;
@@ -620,33 +620,23 @@ void BuildingStats::readStatsFile(string filename) {
 }
 
 // returns the closest state number given a set of buildings
-int BuildingStats::getClosestState(vector<string> buildings) {
-    vector<bool> valid_states;
-    valid_states.resize(sets.size());
-    for (int i = 0; i != valid_states.size(); ++i)
-        valid_states[i] = true;
+int BuildingStats::getClosestState(const set<string>& buildings) {
+    vector<int> closeness;
+    closeness.resize(sets.size());
 
-    // if a state does not contain all the buildings, invalidate it
-    for (int target_index = 0; target_index != buildings.size(); ++target_index)
-        for (unsigned int state = 0; state != sets.size(); ++state) {
-            if (!valid_states[state])
-                continue;
-            bool match = false;
-            for (int building_index = 0; building_index != sets[state].size(); ++ building_index)
-                if (sets[state][building_index] == buildings[target_index]) {
-                    match = true;
-                    break;
-                }
-            if (!match)
-                valid_states[state] = false;
-        }
+    for (unsigned int state = 0; state != sets.size(); ++state)
+        for (int building_index = 0; building_index != sets[state].size(); ++building_index)
+            if (buildings.count(sets[state][building_index]))
+                closeness[state] += 1;
+            else
+                closeness[state] -= 1;
 
     int smallest_state_index = 0;
-    int unsigned smallest_state_size = 999;
-    for (int i = 0; i != valid_states.size(); ++i)
-        if (valid_states[i] && sets[i].size() < smallest_state_size) {
+    int smallest_state_closeness = -999;
+    for (int i = 0; i != closeness.size(); ++i)
+        if (closeness[i] > smallest_state_closeness) {
             smallest_state_index = i;
-            smallest_state_size = sets[i].size();
+            smallest_state_closeness = closeness[i];
         }
     return smallest_state_index + 1; // states start with '1'
 }

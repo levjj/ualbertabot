@@ -9,7 +9,7 @@
 
 #define GOAL_ADD(G, M, N) G.push_back(std::pair<MetaType, int>(M, N))
 
-ProductionManager::ProductionManager() 
+ProductionManager::ProductionManager()
 	: initialBuildSet(false)
 	, reservedMinerals(0)
 	, reservedGas(0)
@@ -44,7 +44,7 @@ void ProductionManager::performBuildOrderSearch(const std::vector< std::pair<Met
 	setBuildOrder(buildOrder);
 }
 
-void ProductionManager::update() 
+void ProductionManager::update()
 {
 	// check the queue for stuff we can build
 	manageBuildOrderQueue();
@@ -427,25 +427,33 @@ BWAPI::Unit * ProductionManager::selectUnitOfType(BWAPI::UnitType type, bool lea
 
 void ProductionManager::onSendText(std::string text)
 {
-	MetaType typeWanted(BWAPI::UnitTypes::None);
-	int numWanted = 0;
-
 	if (text.compare("clear") == 0)
 	{
 		searchGoal.clear();
 	}
 	else if (text.compare("search") == 0)
 	{
-		performBuildOrderSearch(searchGoal);
+        BWAPI::Broodwar->printf("ProductionManager: searching");
+        performBuildOrderSearch(searchGoal);
 		searchGoal.clear();
 	}
-	else if (text[0] >= 'a' && text[0] <= 'z')
+	else if (text[1] == ' ' && text[0] >= 'a' && text[0] <= 'z')
 	{
-		MetaType typeWanted = typeCharMap[text[0]];
+        MetaType typeWanted = typeCharMap[text[0]];
 		text = text.substr(2,text.size());
-		numWanted = atoi(text.c_str());
+		int numWanted = atoi(text.c_str());
 
-		searchGoal.push_back(std::pair<MetaType, int>(typeWanted, numWanted));
+        string unit = typeWanted.getName();
+        BWAPI::Broodwar->printf("ProductionManager: adding %d %s to search goal", numWanted, unit.c_str());
+
+        searchGoal.push_back(std::pair<MetaType, int>(typeWanted, numWanted));
+
+        // Action numbers are defined in StarcraftData.hpp
+        //std::vector<MetaType> buildOrder = StarcraftBuildOrderSearchManager::Instance().getMetaVector("0 0 0 0 1 0 0 3 0 7 0 0 5 0 0 3 8 6 1 6 6 0 3 1 0 6 6 6");
+        //MetaPairVector newGoal = StrategyManager::Instance().getBuildOrderGoal();
+        //newGoal.push_back(std::pair<MetaType, int>(typeWanted, numWanted));
+        //buildOrder = StarcraftBuildOrderSearchManager::Instance().findBuildOrder(newGoal);
+        //setBuildOrder(buildOrder);
 	}
 }
 

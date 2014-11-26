@@ -297,7 +297,8 @@ void GameCommander::onUnitMorph(BWAPI::Unit * unit)
 
 void GameCommander::onSendText(std::string text)
 {
-	ProductionManager::Instance().onSendText(text);
+    // chain console commands to production manager
+    ProductionManager::Instance().onSendText(text);
 
 	if (text.compare("0") == 0)
 	{

@@ -106,24 +106,24 @@ void testBuildingStats() {
 	BuildingStats stats;
 
 	stats.readStatsFile("P/stats.csv");
-	vector<string> search;
-	search.push_back("Assimilator");
-	search.push_back("Gateway");
+	set<string> search;
+	search.insert("Assimilator");
+	search.insert("Gateway");
 	int state = stats.getClosestState(search);
 }
 
 int main(int argc, char* argv[])
 {
-	// testBuildingStats();
+    testBuildingStats();
     
-	if (argc == 3) {
+	/*if (argc == 3) {
 		testhmm(argv[1], atoi(argv[2]));
 	}
 	else {
 		system("time /t");
 		trainhmm(argv[1], 48, 256);
 		system("time /t");
-	}
+	}*/
 
     system("pause");
 }

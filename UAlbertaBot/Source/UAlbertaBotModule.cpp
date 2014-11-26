@@ -105,7 +105,10 @@ void UAlbertaBotModule::onUnitMorph(BWAPI::Unit * unit)
 
 void UAlbertaBotModule::onSendText(std::string text) 
 { 
-	BWAPI::Broodwar->sendText(text.c_str());
+    // ADDED: send console commands to the other managers
+    gameCommander.onSendText(text);
+
+    BWAPI::Broodwar->sendText(text.c_str());
 
 
 	if (Options::Modules::USING_REPLAY_VISUALIZER && (text.compare("sim") == 0))
@@ -130,7 +133,7 @@ void UAlbertaBotModule::onSendText(std::string text)
 	}
 	else if (text.compare("sim") != 0)
 	{
-		BWAPI::Broodwar->setLocalSpeed(atoi(text.c_str()));
+		//BWAPI::Broodwar->setLocalSpeed(atoi(text.c_str()));
 	}
 }
 
