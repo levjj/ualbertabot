@@ -211,11 +211,19 @@ public:
   ~Hmm();
 };
 
+struct compare_by_statesize {
+	bool operator() (const pair<int,int> &lhs, const pair<int,int> &rhs) const {
+		return lhs.second < rhs.second;
+	}
+};
+
 class BuildingStats
 {
-    vector<vector<string>> sets;
+    vector<set<string>> sets;
+	set <pair<int, int>, compare_by_statesize> sets_by_size;
 
 public:
     void readStatsFile(const string& filename);
-    int getClosestState(const set<string>& buildings);
+    int getClosestState(const set<string>& unitTypes);
+	set<string>* decodeState(int state);
 };
