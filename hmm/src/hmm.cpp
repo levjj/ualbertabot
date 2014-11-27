@@ -597,11 +597,10 @@ void BuildingStats::readStatsFile(const string& filename) {
     string line;
     if (infile.is_open()) {
         while (getline(infile, line)) {
-            vector<string> buildings;
+            set<string> buildings;
             size_t start = line.find('[');
             size_t end = line.find(']');
             if (end == start + 1) {
-                buildings.push_back("");
                 sets.push_back(buildings);
                 continue;
             }
@@ -610,33 +609,30 @@ void BuildingStats::readStatsFile(const string& filename) {
                 start = line.find('\'');
                 end = line.find('\'', start + 1);
                 string building = line.substr(start + 1, end - start - 1);
-                buildings.push_back(building);
+                buildings.insert(building);
                 line = line.substr(end + 1);
             } while (line.find(',') != string::npos);
-            sets.push_back(buildings);
+			sets_by_size.insert(pair<int, int>(sets.size(), buildings.size()));
+			sets.push_back(buildings);
         }
         infile.close();
     }
 }
 
 // returns the closest state number given a set of buildings
-int BuildingStats::getClosestState(const set<string>& buildings) {
-    vector<int> closeness;
-    closeness.resize(sets.size());
+int BuildingStats::getClosestState(const set<string>& unitTypes) {
+	set <pair<int, int>, compare_by_statesize>::iterator it = sets_by_size.begin();
+	for (; it != sets_by_size.end(); ++it) {
+		set<string>::const_iterator unitType = unitTypes.begin();
+		for (; unitType != unitTypes.end() && sets[it->first].count(*unitType); ++unitType);
+		if (unitType == unitTypes.end()) {
+			return it->first; // found state that has all the unit types
+		}
+	}
+	return (--it)->first; // not found any state that has all the unit types
+}
 
-    for (unsigned int state = 0; state != sets.size(); ++state)
-        for (int building_index = 0; building_index != sets[state].size(); ++building_index)
-            if (buildings.count(sets[state][building_index]))
-                closeness[state] += 1;
-            else
-                closeness[state] -= 1;
-
-    int smallest_state_index = 0;
-    int smallest_state_closeness = -999;
-    for (int i = 0; i != closeness.size(); ++i)
-        if (closeness[i] > smallest_state_closeness) {
-            smallest_state_index = i;
-            smallest_state_closeness = closeness[i];
-        }
-    return smallest_state_index + 1; // states start with '1'
+// returns the closest state number given a set of buildings
+set<string>* BuildingStats::decodeState(int state) {
+	return &sets[state - 1];
 }
