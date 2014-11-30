@@ -219,11 +219,13 @@ struct compare_by_statesize {
 
 class BuildingStats
 {
+public:
     vector<set<string>> sets;
 	set <pair<int, int>, compare_by_statesize> sets_by_size;
 
 public:
     void readStatsFile(const string& filename);
     int getClosestState(const set<string>& unitTypes);
-	set<string>* decodeState(int state);
+    int getClosestState2(const set<string>& unitTypes);
+    set<string>* decodeState(int state);
 };

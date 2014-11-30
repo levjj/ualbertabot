@@ -76,16 +76,17 @@ void InformationManager::updateHMM() {
     BWAPI::Broodwar->drawTextScreen(205, 344, "closest %d predicted %d", current_enemy_state, predicted_enemy_state); // update info on HUD
 
     char race_c = BWAPI::Broodwar->enemy()->getRace().getName().c_str()[0];
+    if (race_c == 'U') // if we don't know race yet, return
+        return;
+
     int frameCount = BWAPI::Broodwar->getFrameCount();
-    if (race_c != 'U' && enemy_race == 'U') { // Race changed from unknown to known, load all the data we need for that race
+    if (enemy_race == 'U') { // Race changed from unknown to known, load all the data we need for that race
         enemy_race = race_c;
         loadHMMdata(enemy_race);
         for (int i = 0; i < frameCount / 300; ++i) // catch up observations, observe once for each 300 frames
             hmm.observe(1);
     }
 
-    if (enemy_race == 'U') // if we don't know race yet, return
-        return;
     if (frameCount % 300) // only update observation and prediction every 300 frames (12.6s)
         return;
 

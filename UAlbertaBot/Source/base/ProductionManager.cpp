@@ -437,6 +437,11 @@ void ProductionManager::onSendText(std::string text)
         performBuildOrderSearch(searchGoal);
 		searchGoal.clear();
 	}
+    else if (text.compare("test") == 0) {
+        // Action numbers are defined in StarcraftData.hpp
+        std::vector<MetaType> buildOrder = StarcraftBuildOrderSearchManager::Instance().getMetaVector("0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 2 3 7 0 0 7 5 17 27 17 30 28 28 30 28 28 28 28 28 28 28 28 28 28"); // 12 carriers
+        setBuildOrder(buildOrder);
+    }
 	else if (text[1] == ' ' && text[0] >= 'a' && text[0] <= 'z')
 	{
         MetaType typeWanted = typeCharMap[text[0]];
@@ -448,12 +453,14 @@ void ProductionManager::onSendText(std::string text)
 
         searchGoal.push_back(std::pair<MetaType, int>(typeWanted, numWanted));
 
-        // Action numbers are defined in StarcraftData.hpp
-        //std::vector<MetaType> buildOrder = StarcraftBuildOrderSearchManager::Instance().getMetaVector("0 0 0 0 1 0 0 3 0 7 0 0 5 0 0 3 8 6 1 6 6 0 3 1 0 6 6 6");
-        //MetaPairVector newGoal = StrategyManager::Instance().getBuildOrderGoal();
-        //newGoal.push_back(std::pair<MetaType, int>(typeWanted, numWanted));
-        //buildOrder = StarcraftBuildOrderSearchManager::Instance().findBuildOrder(newGoal);
-        //setBuildOrder(buildOrder);
+        // get current goal
+        MetaPairVector newGoal = StrategyManager::Instance().getBuildOrderGoal();
+        // add the unit to the goal
+        newGoal.push_back(std::pair<MetaType, int>(typeWanted, numWanted));
+        // search for a new build order
+        std::vector<MetaType>buildOrder = StarcraftBuildOrderSearchManager::Instance().findBuildOrder(newGoal);
+        // apply new build orders
+        setBuildOrder(buildOrder);
 	}
 }
 

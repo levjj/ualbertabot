@@ -51,7 +51,7 @@ class StarcraftData {
 	void addActions(BWAPI::Race & r)
 	{
 		if (r == BWAPI::Races::Protoss)
-		{
+		{                                                                                                           // Action number index
 			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Probe, actions.size()));					// 0
 			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Pylon, actions.size()));					// 1
 			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Nexus, actions.size()));					// 2
@@ -68,21 +68,22 @@ class StarcraftData {
 			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Templar_Archives, actions.size()));			// 13
 			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Robotics_Facility, actions.size()));		// 14
 			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Robotics_Support_Bay, actions.size()));		// 15
-			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Observatory, actions.size()));
-			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Stargate, actions.size()));
-			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Scout, actions.size()));
-			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Arbiter_Tribunal, actions.size()));
-			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Arbiter, actions.size()));
-			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Shield_Battery, actions.size()));
-			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Dark_Templar, actions.size()));
-			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Shuttle, actions.size()));
-			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Reaver, actions.size()));
-			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Observer, actions.size()));
-			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Corsair, actions.size()));
-			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Fleet_Beacon, actions.size()));
-			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Carrier, actions.size()));
-			actions.push_back(StarcraftAction(BWAPI::UpgradeTypes::Leg_Enhancements, actions.size()));
-		}
+			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Observatory, actions.size()));              // 16
+			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Stargate, actions.size()));                 // 17
+			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Scout, actions.size()));                    // 18
+			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Arbiter_Tribunal, actions.size()));         // 19
+			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Arbiter, actions.size()));                  // 20
+			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Shield_Battery, actions.size()));           // 21
+			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Dark_Templar, actions.size()));             // 22
+			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Shuttle, actions.size()));                  // 23
+			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Reaver, actions.size()));                   // 24
+			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Observer, actions.size()));                 // 25
+			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Corsair, actions.size()));                  // 26
+			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Fleet_Beacon, actions.size()));             // 27
+			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Protoss_Carrier, actions.size()));                  // 28
+            actions.push_back(StarcraftAction(BWAPI::UpgradeTypes::Leg_Enhancements, actions.size()));              // 29
+            actions.push_back(StarcraftAction(BWAPI::UpgradeTypes::Carrier_Capacity, actions.size()));              // 30
+        }
 		else if (r == BWAPI::Races::Terran)
 		{
 			actions.push_back(StarcraftAction(BWAPI::UnitTypes::Terran_SCV, actions.size()));
