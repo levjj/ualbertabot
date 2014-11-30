@@ -111,25 +111,6 @@ void testSmartArmySearch()
 	printf("Army Search Took %lfms\n", r.timeElapsed);
 }
 
-void testSmartSearch()
-{
-	// default state
-	StarcraftState initialState(true);
-
-	SmartStarcraftSearch sss;
-	sss.addGoal(DATA.getAction(BWAPI::UnitTypes::Zerg_Zergling), 16);
-	sss.setState(initialState);
-	
-	// do the search
-	SearchResults result = sss.search();
-	
-	if (result.solved)
-	{
-		result.printResults(true);
-	}
-}
-
-
 void testSingleSearch()
 {
 	StarcraftState init(true);
@@ -162,14 +143,31 @@ void testSingleSearch()
 	//}
 }
 
+void testSmartSearch() {
+    // default state
+    StarcraftState initialState(true);
+
+    SmartStarcraftSearch sss;
+    sss.addGoal(DATA.getAction(BWAPI::UnitTypes::Protoss_Carrier), 1);
+    //sss.addGoal(DATA.getAction(BWAPI::UpgradeTypes::Carrier_Capacity), 1);
+    sss.setState(initialState);
+
+    // do the search
+    SearchResults result = sss.search();
+
+    if (result.solved) {
+        result.printResults(true);
+    }
+}
 
 int main()
 {
     BWAPI::BWAPI_init();
-	DATA.init(BWAPI::Races::Zerg);
+	DATA.init(BWAPI::Races::Protoss);
 	
 	testSmartSearch();
 
+    system("pause");
     return 0;
 }
 

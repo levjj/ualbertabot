@@ -620,7 +620,7 @@ void BuildingStats::readStatsFile(const string& filename) {
 }
 
 // returns the closest state number given a set of buildings
-int BuildingStats::getClosestState(const set<string>& unitTypes) {
+int BuildingStats::getClosestState2(const set<string>& unitTypes) {
 	set <pair<int, int>, compare_by_statesize>::iterator it = sets_by_size.begin();
 	for (; it != sets_by_size.end(); ++it) {
 		set<string>::const_iterator unitType = unitTypes.begin();
@@ -635,4 +635,28 @@ int BuildingStats::getClosestState(const set<string>& unitTypes) {
 // returns the closest state number given a set of buildings
 set<string>* BuildingStats::decodeState(int state) {
 	return &sets[state - 1];
+}
+
+int BuildingStats::getClosestState(const set<string>& unitTypes) {
+    vector<int> misses;
+    misses.resize(sets.size());
+    // count number of units not in state
+    for (unsigned int state = 0; state != sets.size(); ++state)
+        for (set<string>::const_iterator target_iter = unitTypes.begin(); target_iter != unitTypes.end(); ++target_iter)
+            if (!sets[state].count(*target_iter))
+                ++misses[state];
+    // find lowest miss count
+    int min_misses = 999;
+    for (int i = 0; i != misses.size(); ++i)
+        if (misses[i] < min_misses)
+            min_misses = misses[i];
+
+    int smallest_state_index = 0;
+    unsigned int smallest_state_size = 999;
+    for (int i = 0; i != misses.size(); ++i)
+        if (misses[i] == min_misses && sets[i].size() < smallest_state_size) {
+            smallest_state_index = i;
+            smallest_state_size = sets[i].size();
+        }
+    return smallest_state_index + 1;
 }

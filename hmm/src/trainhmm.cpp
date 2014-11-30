@@ -107,14 +107,21 @@ void testBuildingStats() {
 
 	stats.readStatsFile("P/stats.csv");
 	set<string> search;
-	search.insert("Reaver");
-	int state = stats.getClosestState(search);
-	cout << state << endl;
-	set<string> *unitTypes = stats.decodeState(state);
-	for (set<string>::iterator it = unitTypes->begin(); it != unitTypes->end(); it++) {
-		cout << *it << ",";
-	}
-	cout << endl;
+    search.insert("Reaver");
+    search.insert("Observer");
+    int state = stats.getClosestState(search);
+    int state2 = stats.getClosestState2(search);
+    cout << state << " " << state2 << endl;
+    set<string>* unitTypes = stats.decodeState(state);
+    for (set<string>::iterator it = unitTypes->begin(); it != unitTypes->end(); it++) {
+        cout << *it << ",";
+    }
+    cout << endl << endl;;
+    set<string>& unitTypes2 = stats.sets[state2-1];
+    for (set<string>::iterator it = unitTypes2.begin(); it != unitTypes2.end(); it++) {
+        cout << *it << ",";
+    }
+    cout << endl;
 }
 
 int main(int argc, char* argv[])
