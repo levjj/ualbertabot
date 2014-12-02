@@ -213,7 +213,7 @@ public:
 
 struct compare_by_statesize {
 	bool operator() (const pair<int,int> &lhs, const pair<int,int> &rhs) const {
-		return lhs.second < rhs.second;
+		return lhs.second == rhs.second ? lhs.first < rhs.first : lhs.second < rhs.second;
 	}
 };
 

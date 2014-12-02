@@ -601,7 +601,8 @@ void BuildingStats::readStatsFile(const string& filename) {
             size_t start = line.find('[');
             size_t end = line.find(']');
             if (end == start + 1) {
-                sets.push_back(buildings);
+				sets_by_size.insert(pair<int, int>(sets.size(), buildings.size()));
+				sets.push_back(buildings);
                 continue;
             }
             line = line.substr(start + 1, end - start - 1);
@@ -626,10 +627,10 @@ int BuildingStats::getClosestState2(const set<string>& unitTypes) {
 		set<string>::const_iterator unitType = unitTypes.begin();
 		for (; unitType != unitTypes.end() && sets[it->first].count(*unitType); ++unitType);
 		if (unitType == unitTypes.end()) {
-			return it->first; // found state that has all the unit types
+			return it->first + 1; // found state that has all the unit types
 		}
 	}
-	return (--it)->first; // not found any state that has all the unit types
+	return (--it)->first + 1; // not found any state that has all the unit types
 }
 
 // returns the closest state number given a set of buildings
