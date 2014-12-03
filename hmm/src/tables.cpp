@@ -141,19 +141,6 @@ vector<double>* TwoDTable::dist(vector<double>* curr)
 			(*result)[probDist->first] += curr->at(fromState->first) * exp(probDist->second);
 		}
 	}
-
-	/*for (unsigned long i = 0; i < size(); ++i) {
-		if (curr->at(i) == 0) continue;
-		TwoDTable::iterator fromStateI = find(i);
-		if (fromStateI == end()) continue;
-		for (unsigned long j = 0; j < fromStateI->second->size(); ++j) {
-			OneDTable::iterator toStateJ = fromStateI->second->find(j);
-			if (toStateJ == fromStateI->second->end()) continue;
-			while (result->size() <= j) result->push_back(0);
-			// w'_j = sum_i ( w_i * e^ln(t_ij) )
-			(*result)[j] += curr->at(i) * exp(toStateJ->second);
-		}
-	}*/
 	return result;
 }
 
