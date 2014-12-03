@@ -126,16 +126,17 @@ void testBuildingStats() {
 
 int main(int argc, char* argv[])
 {
-    testBuildingStats();
-    
-	/*if (argc == 3) {
+	if (argc == 0) {
+		testBuildingStats();
+	}
+	else if (argc == 3) {
 		testhmm(argv[1], atoi(argv[2]));
 	}
 	else {
 		system("time /t");
 		trainhmm(argv[1], 48, 256);
 		system("time /t");
-	}*/
+	}
 
     system("pause");
 }

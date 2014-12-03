@@ -116,6 +116,46 @@ void TwoDTable::max(unsigned long curr, unsigned long& next)
 	it->second->max(next);
 }
 
+unsigned long TwoDTable::max(vector<double>* curr)
+{
+	vector<double>* distribution = dist(curr);
+	unsigned long max = 0;
+	for (unsigned long i = 1; i < distribution->size(); i++) {
+		if (distribution->at(i) > distribution->at(max)) {
+			max = i;
+		}
+	}
+	delete distribution;
+	return max;
+}
+
+vector<double>* TwoDTable::dist(vector<double>* curr)
+{
+	vector<double>* result = new vector<double>();
+	for (TwoDTable::iterator fromState = begin(); fromState != end(); ++fromState) {
+		if (curr->at(fromState->first) == 0) continue;
+		OneDTable::iterator probDist = fromState->second->begin();
+		for (; probDist != fromState->second->end(); ++probDist) {
+			while (result->size() <= probDist->first) result->push_back(0);
+			// w'_j = sum_i ( w_i * e^ln(t_ij) )
+			(*result)[probDist->first] += curr->at(fromState->first) * exp(probDist->second);
+		}
+	}
+
+	/*for (unsigned long i = 0; i < size(); ++i) {
+		if (curr->at(i) == 0) continue;
+		TwoDTable::iterator fromStateI = find(i);
+		if (fromStateI == end()) continue;
+		for (unsigned long j = 0; j < fromStateI->second->size(); ++j) {
+			OneDTable::iterator toStateJ = fromStateI->second->find(j);
+			if (toStateJ == fromStateI->second->end()) continue;
+			while (result->size() <= j) result->push_back(0);
+			// w'_j = sum_i ( w_i * e^ln(t_ij) )
+			(*result)[j] += curr->at(i) * exp(toStateJ->second);
+		}
+	}*/
+	return result;
+}
 
 OneDTable::OneDTable()
 {

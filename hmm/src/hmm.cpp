@@ -549,13 +549,6 @@ vector<double>* Hmm::predict(unsigned int t) {
 	return atoi(getStr(max).c_str()) + 1;
 }*/
 
-unsigned long Hmm::predictMax(unsigned int t) {
-	vector<unsigned long>* obs = predictMaxSeq(t);
-	unsigned long pred = obs->at(obs->size() - 1);
-	delete obs;
-	return pred;
-}
-
 vector<unsigned long>* Hmm::predictMaxSeq(unsigned int t) {
 	vector<unsigned long>* result = new vector<unsigned long>();
 	vector<Transition*> transitions;
@@ -565,16 +558,27 @@ vector<unsigned long>* Hmm::predictMaxSeq(unsigned int t) {
 	else {
 		viterbi(transitions);
 	}
-	unsigned long state = transitions.back()->_to->state(), next, obs;
+	unsigned long state = transitions.back()->_to->state(), obs;
+	vector<double> *stateDistribution = new vector<double>(_transition.size(), 0), *next;
+	(*stateDistribution)[state] = 1.0;
+	// Initial state distribution is 0, 0, ... 0, 1, 0, ... 0, 0
+	//                                            ^
+	//                                            State returned by viterbi
 	for (unsigned int i = 0; i < t; i++) {
-		do {
-			_transition.rand(state, next);
-		} while (next >= _transition.size());
-		state = next;
-		_emission.max(state, obs);
+		next = _transition.dist(stateDistribution);
+		delete stateDistribution;
+		stateDistribution = next;
+		obs = _emission.max(stateDistribution);
 		result->push_back(atoi(getStr(obs).c_str()));
 	}
 	return result;
+}
+
+unsigned long Hmm::predictMax(unsigned int t) {
+	vector<unsigned long>* obs = predictMaxSeq(t);
+	unsigned long pred = obs->at(obs->size() - 1);
+	delete obs;
+	return pred;
 }
 
 void PseudoCounts::print(Str2IdMap& str2id)

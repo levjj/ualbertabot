@@ -70,6 +70,10 @@ public:
 
   void max(unsigned long curr, unsigned long& next);
 
+  unsigned long max(vector<double>* curr);
+
+  vector<double>* dist(vector<double>* curr);
+
   ~TwoDTable();
 };
 
