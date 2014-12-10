@@ -625,7 +625,7 @@ void BuildingStats::readStatsFile(const string& filename) {
 }
 
 // returns the closest state number given a set of buildings
-int BuildingStats::getClosestState2(const set<string>& unitTypes) {
+int BuildingStats::getClosestState(const set<string>& unitTypes) {
 	set <pair<int, int>, compare_by_statesize>::iterator it = sets_by_size.begin();
 	for (; it != sets_by_size.end(); ++it) {
 		set<string>::const_iterator unitType = unitTypes.begin();
@@ -642,7 +642,7 @@ set<string>* BuildingStats::decodeState(int state) {
 	return &sets[state - 1];
 }
 
-int BuildingStats::getClosestState(const set<string>& unitTypes) {
+int BuildingStats::getClosestState2(const set<string>& unitTypes) {
     vector<int> misses;
     misses.resize(sets.size());
     // count number of units not in state

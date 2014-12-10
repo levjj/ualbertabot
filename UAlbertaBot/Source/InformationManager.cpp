@@ -174,7 +174,6 @@ void InformationManager::updateHMM() {
                 if (unit.find("Devourer") != string::npos) { target.insert("Devourer");  target.insert("Mutalisk"); target.insert("Spire"); }
                 if (unit.find("Scourge") != string::npos) { target.insert("Scourge"); target.insert("Spire"); }
                 if (unit.find("Ultralisk") != string::npos) { target.insert("Ultralisk"); target.insert("Ultralisk Cavern"); }
-                if (unit.find("Defiler") != string::npos) { target.insert("Defiler"); target.insert("Defiler Mound"); }
             } else if (t.isDetector()) {
                 // Protoss units
                 if (unit.find("Observer") != string::npos) { target.insert("Observer"); target.insert("Observatory"); }
@@ -203,7 +202,7 @@ void InformationManager::updateHMM() {
     if (state != current_enemy_state || predicted_state != predicted_enemy_state) {
         current_enemy_state = state;
         predicted_enemy_state = predicted_state;
-        BWAPI::Broodwar->printf("InformationManager: closest %d predicted %d", current_enemy_state, predicted_enemy_state);
+        //BWAPI::Broodwar->printf("InformationManager: closest %d predicted %d", current_enemy_state, predicted_enemy_state);
     }
 }
 
