@@ -450,7 +450,6 @@ void ProductionManager::onSendText(std::string text)
 
         string unit = typeWanted.getName();
         BWAPI::Broodwar->printf("ProductionManager: adding %d %s to search goal", numWanted, unit.c_str());
-
         searchGoal.push_back(std::pair<MetaType, int>(typeWanted, numWanted));
 
         // get current goal
