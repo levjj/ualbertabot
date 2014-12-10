@@ -187,7 +187,12 @@ void InformationManager::updateHMM() {
     unsigned int predicted_state = hmm.predictMax(3); // predict enemy future state
     current_enemy_state = state;
     predicted_enemy_state = predicted_state;
-    BWAPI::Broodwar->printf("InformationManager: closest %d predicted %d", current_enemy_state, predicted_enemy_state);
+	string msg;
+	set<string> *prediction = stats.decodeState(predicted_state);
+	for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
+		msg += (*it) + ",";
+	}
+    BWAPI::Broodwar->printf("InformationManager: predicting %d (%s)", predicted_enemy_state, msg.c_str());
 }
 
 void InformationManager::update()
