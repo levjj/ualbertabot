@@ -179,9 +179,11 @@ void StrategyManager::setStrategy()
 	}
 	else
 	{
-		// otherwise return a random strategy
+        BWAPI::Broodwar->printf("Setting strategy to ProtossZealotRush");
+        // otherwise return a random strategy
         currentStrategy = ProtossZealotRush;
-	}
+        currentStrategy = ProtossDragoons;
+    }
 
 }
 
@@ -372,7 +374,7 @@ const MetaPairVector StrategyManager::getBuildOrderGoal()
 	{
 		if (getCurrentStrategy() == ProtossZealotRush)
 		{
-			return getProtossZealotRushBuildOrderGoal();
+            return getProtossZealotRushBuildOrderGoal();
 		}
 		else if (getCurrentStrategy() == ProtossDarkTemplar)
 		{
@@ -538,7 +540,7 @@ const MetaPairVector StrategyManager::getProtossDarkTemplarBuildOrderGoal() cons
 
 const MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal() const
 {
-	// the goal to return
+    // the goal to return
 	MetaPairVector goal;
 
 	int numZealots =			BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Zealot);

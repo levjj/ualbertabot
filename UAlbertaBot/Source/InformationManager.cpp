@@ -202,7 +202,7 @@ void InformationManager::updateHMM() {
     if (state != current_enemy_state || predicted_state != predicted_enemy_state) {
         current_enemy_state = state;
         predicted_enemy_state = predicted_state;
-        BWAPI::Broodwar->printf("InformationManager: closest %d predicted %d", current_enemy_state, predicted_enemy_state);
+        //BWAPI::Broodwar->printf("InformationManager: closest %d predicted %d", current_enemy_state, predicted_enemy_state);
     }
 }
 

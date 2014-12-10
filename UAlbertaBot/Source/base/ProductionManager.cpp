@@ -89,7 +89,10 @@ void ProductionManager::update()
 // on unit destroy
 void ProductionManager::onUnitDestroy(BWAPI::Unit * unit)
 {
-	// we don't care if it's not our unit
+	// ADDED, doesnt work well to research every time
+    return;
+    
+    // we don't care if it's not our unit
 	if (!unit || unit->getPlayer() != BWAPI::Broodwar->self())
 	{
 		return;
@@ -429,8 +432,9 @@ void ProductionManager::onSendText(std::string text)
 {
 	if (text.compare("clear") == 0)
 	{
-		searchGoal.clear();
-	}
+        //queue.clearAll();
+        searchGoal.clear();
+    }
 	else if (text.compare("search") == 0)
 	{
         BWAPI::Broodwar->printf("ProductionManager: searching");
@@ -438,6 +442,7 @@ void ProductionManager::onSendText(std::string text)
 		searchGoal.clear();
 	}
     else if (text.compare("test") == 0) {
+        BWAPI::Broodwar->printf("ProductionManager: testing build");
         // Action numbers are defined in StarcraftData.hpp
         std::vector<MetaType> buildOrder = StarcraftBuildOrderSearchManager::Instance().getMetaVector("0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 2 3 7 0 0 7 5 17 27 17 30 28 28 30 28 28 28 28 28 28 28 28 28 28"); // 12 carriers
         setBuildOrder(buildOrder);
