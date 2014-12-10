@@ -1,4 +1,5 @@
 from pyreplib import replay
+from pyreplib.actions import LeaveGame
 import sys, os
 
 # Collects information about all players of a certain race
@@ -107,6 +108,13 @@ class Game:
 
     # Generate building set codes for every 12.6s of the game and write to file
     def analyze(self):
+        lastAction = self.player.actions[-1]
+        if isinstance(lastAction, LeaveGame):
+            print lastAction.get_reason()
+        else:
+            print "-"
+        return
+        
         self.bucketActions()
         #print [self.player.race_name, self.replay.map_name]
 
