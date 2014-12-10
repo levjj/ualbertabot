@@ -40,6 +40,7 @@ class InformationManager {
 	const UnitData &					getUnitData(BWAPI::Unit * unit) const;
 
     // ADDED
+	unsigned long                       steps;
     Hmm                                 hmm;
     BuildingStats                       stats;
     unsigned long                       current_enemy_state;

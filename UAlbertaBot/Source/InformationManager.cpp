@@ -9,6 +9,7 @@ InformationManager::InformationManager()
 	: goForIt(false)
 	, map(BWAPI::Broodwar)
 	, lastFrameRegroup(false)
+	, steps(0)
 {
 	initializeRegionInformation();
 
@@ -59,38 +60,23 @@ void InformationManager::loadHMMdata(char race_c) {
     string file = "?/stats.csv";
     file[0] = race_c;
     stats.readStatsFile(file);
-
-    return;
-    
-    std::map<string, string> names = readNamesFromStatsFile(file);
-    string filename = "?-names.txt";
-    filename[0] = race_c;
-    ofstream myfile;
-    myfile.open(filename.c_str());
-    for (std::map<std::string, std::string>::iterator iter = names.begin(); iter != names.end(); ++iter)
-        myfile << iter->first << endl;
-    myfile.close();
 }
 
 void InformationManager::updateHMM() {
-    BWAPI::Broodwar->drawTextScreen(205, 344, "closest %d predicted %d", current_enemy_state, predicted_enemy_state); // update info on HUD
-
-    char race_c = BWAPI::Broodwar->enemy()->getRace().getName().c_str()[0];
+    char race_c = BWAPI::Broodwar->enemy()->getRace().getName()[0];
     if (race_c == 'U') // if we don't know race yet, return
         return;
 
     int frameCount = BWAPI::Broodwar->getFrameCount();
-    if (enemy_race == 'U') { // Race changed from unknown to known, load all the data we need for that race
-        enemy_race = race_c;
-        loadHMMdata(enemy_race);
-        for (int i = 0; i < frameCount / 300; ++i) // catch up observations, observe once for each 300 frames
-            hmm.observe(1);
-    }
 
-    if (frameCount % 300) // only update observation and prediction every 300 frames (12.6s)
-        return;
+	if (enemy_race == 'U') { // Race changed from unknown to known, load all the data we need for that race
+		enemy_race = race_c;
+		loadHMMdata(enemy_race);
+		for (int i = 0; i < frameCount / 300; ++i) // catch up observations, observe once for each 300 frames
+			hmm.observe(1);
+	}
 
-    set<string> target;
+	set<string> target;
 
     BOOST_FOREACH(BWAPI::UnitType t, BWAPI::UnitTypes::allUnitTypes()) {
         int numUnits = enemyUnitData.getNumUnits(t);
@@ -146,64 +132,62 @@ void InformationManager::updateHMM() {
                 if (unit.find("Spore") != string::npos)                 target.insert("Evolution Chamber"); // prereq
             } else if (t.canAttack()) { // units that can attacks, and prereqs for those units
                 // Protoss units
-                if (unit.find("Zealot") != string::npos) { target.insert("Zealot");  target.insert("Gateway"); }
-                if (unit.find("Dragoon") != string::npos) { target.insert("Dragoon"); target.insert("Gateway"); target.insert("Cybernetics Core"); }
-                if (unit.find("Dark Templar") != string::npos) { target.insert("Dark Templar"); target.insert("Gateway"); target.insert("Templar Archives"); }
-                if (unit.find("Archon") != string::npos) { target.insert("High Templar"); target.insert("Templar Archives"); }
-                if (unit.find("Reaver") != string::npos) { target.insert("Reaver"); target.insert("Robotics Facility"); target.insert("Robotics Support Bay"); }
-                if (unit.find("Scout") != string::npos) { target.insert("Scout"); target.insert("Stargate"); }
-                if (unit.find("Carrier") != string::npos) { target.insert("Carrier"); target.insert("Stargate"); target.insert("Fleet Beacon"); }
-                if (unit.find("Arbiter") != string::npos) { target.insert("Arbiter"); target.insert("Stargate"); target.insert("Arbiter Tribunal"); }
+                if (unit.find("Zealot") != string::npos) { target.insert("Zealot");  }
+                if (unit.find("Dragoon") != string::npos) { target.insert("Dragoon"); }
+                if (unit.find("Dark Templar") != string::npos) { target.insert("Dark Templar"); }
+                if (unit.find("Archon") != string::npos) { target.insert("High Templar"); }
+                if (unit.find("Reaver") != string::npos) { target.insert("Reaver"); }
+                if (unit.find("Scout") != string::npos) { target.insert("Scout"); }
+                if (unit.find("Carrier") != string::npos) { target.insert("Carrier"); }
+                if (unit.find("Arbiter") != string::npos) { target.insert("Arbiter"); }
                 // Terran units
-                if (unit.find("Firebat") != string::npos) { target.insert("Firebat"); target.insert("Barracks"); target.insert("Academy"); }
-                if (unit.find("Ghost") != string::npos) { target.insert("Ghost"); target.insert("Barracks"); target.insert("Academy"); target.insert("Science Facility"); target.insert("Covert Ops"); }
-                if (unit.find("Vulture") != string::npos) { target.insert("Vulture"); target.insert("Factory"); }
-                if (unit.find("Siege Tank") != string::npos) { target.insert("Siege Tank"); target.insert("Factory"); target.insert("Machine Shop"); }
-                if (unit.find("Goliath") != string::npos) { target.insert("Goliath"); target.insert("Factory"); target.insert("Armory"); }
-                if (unit.find("Wraith") != string::npos) { target.insert("Wraith"); target.insert("Starport"); }
-                if (unit.find("Battlecruiser") != string::npos) { target.insert("Battlecruiser"); target.insert("Starport"); target.insert("Control Tower"); target.insert("Science Facility"); target.insert("Physics Lab"); }
-                if (unit.find("Marine") != string::npos) { target.insert("Marine"); target.insert("Barracks"); }
-                if (unit.find("Nuke") != string::npos) { target.insert("Nuke"); target.insert("Factory"); target.insert("Nuclear Silo"); }
-                if (unit.find("Valkyrie") != string::npos) { target.insert("Starport"); target.insert("Control Tower"); target.insert("Armory"); }
+                if (unit.find("Firebat") != string::npos) { target.insert("Firebat"); }
+                if (unit.find("Ghost") != string::npos) { target.insert("Ghost"); }
+                if (unit.find("Vulture") != string::npos) { target.insert("Vulture"); }
+                if (unit.find("Siege Tank") != string::npos) { target.insert("Siege Tank"); }
+                if (unit.find("Goliath") != string::npos) { target.insert("Goliath"); }
+                if (unit.find("Wraith") != string::npos) { target.insert("Wraith"); }
+                if (unit.find("Battlecruiser") != string::npos) { target.insert("Battlecruiser"); }
+                if (unit.find("Marine") != string::npos) { target.insert("Marine"); }
+                if (unit.find("Nuke") != string::npos) { target.insert("Nuke"); }
+                if (unit.find("Valkyrie") != string::npos) { target.insert("Starport"); }
                 // Zerg units
-                if (unit.find("Zergling") != string::npos) { target.insert("Zergling"); target.insert("Spawning Pool"); }
-                if (unit.find("Hydralisk") != string::npos) { target.insert("Hydralisk"); target.insert("Hydralisk Den"); }
-                if (unit.find("Lurker") != string::npos) { target.insert("Lurker");  target.insert("Hydralisk"); target.insert("Hydralisk Den"); }
-                if (unit.find("Mutalisk") != string::npos) { target.insert("Mutalisk"); target.insert("Spire"); }
-                if (unit.find("Guardian") != string::npos) { target.insert("Guardian"); target.insert("Mutalisk"); target.insert("Spire"); }
-                if (unit.find("Devourer") != string::npos) { target.insert("Devourer");  target.insert("Mutalisk"); target.insert("Spire"); }
-                if (unit.find("Scourge") != string::npos) { target.insert("Scourge"); target.insert("Spire"); }
-                if (unit.find("Ultralisk") != string::npos) { target.insert("Ultralisk"); target.insert("Ultralisk Cavern"); }
+                if (unit.find("Zergling") != string::npos) { target.insert("Zergling"); }
+                if (unit.find("Hydralisk") != string::npos) { target.insert("Hydralisk"); }
+                if (unit.find("Lurker") != string::npos) { target.insert("Lurker");  }
+                if (unit.find("Mutalisk") != string::npos) { target.insert("Mutalisk");}
+                if (unit.find("Guardian") != string::npos) { target.insert("Guardian"); }
+                if (unit.find("Devourer") != string::npos) { target.insert("Devourer"); }
+                if (unit.find("Scourge") != string::npos) { target.insert("Scourge"); }
+                if (unit.find("Ultralisk") != string::npos) { target.insert("Ultralisk"); }
             } else if (t.isDetector()) {
                 // Protoss units
-                if (unit.find("Observer") != string::npos) { target.insert("Observer"); target.insert("Observatory"); }
+                if (unit.find("Observer") != string::npos) { target.insert("Observer"); }
                 // Terran units
-                if (unit.find("Science Vessel") != string::npos) { target.insert("Science Vessel"); target.insert("Starport"); target.insert("Science Facility"); }
+                if (unit.find("Science Vessel") != string::npos) { target.insert("Science Vessel"); }
                 // Zerg units
             } else {
                 // Protoss units
-                if (unit.find("Dark Archon") != string::npos) { target.insert("Dark Templar"); target.insert("Templar Archives"); }
-                if (unit.find("High Templar") != string::npos) { target.insert("High Templar"); target.insert("Gateway"); target.insert("Templar Archives"); }
-                if (unit.find("Shuttle") != string::npos) { target.insert("Shuttle"); target.insert("Robotics Facility"); }
+                if (unit.find("Dark Archon") != string::npos) { target.insert("Dark Templar"); }
+                if (unit.find("High Templar") != string::npos) { target.insert("High Templar"); }
+                if (unit.find("Shuttle") != string::npos) { target.insert("Shuttle"); }
                 // Terran units
-                if (unit.find("Dropship") != string::npos) { target.insert("Dropship"); target.insert("Starport"); target.insert("Control Tower"); }
-                if (unit.find("Medic") != string::npos) { target.insert("Medic"); target.insert("Barracks"); target.insert("Academy"); }
+                if (unit.find("Dropship") != string::npos) { target.insert("Dropship"); }
+                if (unit.find("Medic") != string::npos) { target.insert("Medic"); }
                 // Zerg units
-                if (unit.find("Queen") != string::npos) { target.insert("Queen"); target.insert("Queens Nest"); }
-                if (unit.find("Defiler") != string::npos) { target.insert("Defiler"); target.insert("Defiler Mound"); }
-                if (unit.find("Lurker Egg") != string::npos) { target.insert("Lurker");  target.insert("Hydralisk"); target.insert("Hydralisk Den"); }
-                if (unit.find("Cocoon") != string::npos) { target.insert("Mutalisk"); target.insert("Spire"); }
+                if (unit.find("Queen") != string::npos) { target.insert("Queen"); }
+                if (unit.find("Defiler") != string::npos) { target.insert("Defiler"); }
+                if (unit.find("Lurker Egg") != string::npos) { target.insert("Lurker"); }
+                if (unit.find("Cocoon") != string::npos) { target.insert("Mutalisk"); }
             }
         }
     }
     unsigned int state = stats.getClosestState(target);
     hmm.observe(state);
     unsigned int predicted_state = hmm.predictMax(3); // predict enemy future state
-    if (state != current_enemy_state || predicted_state != predicted_enemy_state) {
-        current_enemy_state = state;
-        predicted_enemy_state = predicted_state;
-        //BWAPI::Broodwar->printf("InformationManager: closest %d predicted %d", current_enemy_state, predicted_enemy_state);
-    }
+    current_enemy_state = state;
+    predicted_enemy_state = predicted_state;
+    BWAPI::Broodwar->printf("InformationManager: closest %d predicted %d", current_enemy_state, predicted_enemy_state);
 }
 
 void InformationManager::update()
@@ -213,7 +197,13 @@ void InformationManager::update()
 	map.setUnitData(BWAPI::Broodwar);
 	map.setBuildingData(BWAPI::Broodwar);
 
-    updateHMM();
+	// we might miss a few frames
+	int currSteps = BWAPI::Broodwar->getFrameCount() / 300;
+	while (steps < currSteps) {
+		// so update HMM as many times as needed to be up-to-date (hopefully just once)
+		updateHMM();
+		steps++;
+	}
 }
 
 void InformationManager::updateUnitInfo() 
