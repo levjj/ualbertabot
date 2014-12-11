@@ -114,6 +114,7 @@
     <ClCompile Include="..\..\hmm\src\logprobs.cpp" />
     <ClCompile Include="..\..\hmm\src\tables.cpp" />
     <ClCompile Include="..\Source\CombatSimulation.cpp" />
+    <ClCompile Include="..\Source\guicon.cpp" />
     <ClCompile Include="..\Source\MicroSearchManager.cpp" />
     <ClCompile Include="..\Source\base\BuildingData.cpp" />
     <ClCompile Include="..\Source\base\BuildingManager.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="..\..\hmm\src\str2idmap.h" />
     <ClInclude Include="..\..\hmm\src\tables.h" />
     <ClInclude Include="..\Source\CombatSimulation.h" />
+    <ClInclude Include="..\Source\guicon.h" />
     <ClInclude Include="..\Source\MicroSearchManager.h" />
     <ClInclude Include="..\Source\base\BuildingData.h" />
     <ClInclude Include="..\Source\base\BuildingManager.h" />

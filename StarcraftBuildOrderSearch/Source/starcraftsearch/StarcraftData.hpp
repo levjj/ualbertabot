@@ -17,7 +17,7 @@
 #include "ActionInProgress.hpp"
 #include "MacroAction.hpp"
 
-static bool DEBUG_StarcraftData = false;
+static bool DEBUG_StarcraftData = true;
 
 namespace BuildOrderSearch
 {
@@ -121,10 +121,10 @@ class StarcraftData {
 	// adds all prerequisites to the StarcraftAction objects
 	void addPrerequisites()
 	{
+	    if (DEBUG_StarcraftData) printf("Adding Prerequisites for actions...\n");
 		// for each of the actions
 		for (size_t i=0; i<actions.size(); i++)
 		{
-			if (DEBUG_StarcraftData) printf("Adding Pre %d of %d : %s\n", (int)i, (int)actions.size(), actions[i].getName().c_str());
 
 			// set the prerequisite ActionSet based on the function below
 			actions[i].setPrerequisites(calculatePrerequisites(actions[i]));
@@ -164,8 +164,7 @@ class StarcraftData {
 
 		if (DEBUG_StarcraftData) 
 		{
-			printf("DEBUG: Hello\n");
-			printf("DEBUG: %d  \t%s \t%s\n", getAction(action), action.getName().c_str(), actions[getAction(action)].getName().c_str());
+			printf("\nACTION: %d  \t%s \t%s\n", getAction(action), action.getName().c_str(), actions[getAction(action)].getName().c_str());
 		}
 
 		// if it's a UnitType
@@ -184,7 +183,7 @@ class StarcraftData {
 			// for each of the required UnitTypes
 			for (std::map<BWAPI::UnitType, int>::iterator unitIt = requiredUnits.begin(); unitIt != requiredUnits.end(); unitIt++)
 			{
-				if (DEBUG_StarcraftData) printf("\tPRE: %s\n", unitIt->first.getName().c_str());
+				if (DEBUG_StarcraftData) printf("\tPre: %s\n", unitIt->first.getName().c_str());
 	
 				BWAPI::UnitType type = unitIt->first;
 
@@ -199,7 +198,7 @@ class StarcraftData {
 			// if there is a TechType required
 			if (action.getUnitType().requiredTech() != BWAPI::TechTypes::None)
 			{
-				if (DEBUG_StarcraftData) printf("\tPRE: %s\n", action.getUnitType().requiredTech().getName().c_str());
+				if (DEBUG_StarcraftData) printf("\tPre: %s\n", action.getUnitType().requiredTech().getName().c_str());
 
 				// add it to the ActionSet
 				pre.add(getAction(action.getUnitType().requiredTech()));
@@ -211,7 +210,7 @@ class StarcraftData {
 		{
 			if (action.getTechType().whatResearches() != BWAPI::UnitTypes::None)
 			{
-				if (DEBUG_StarcraftData) printf("\tPRE: %s\n", action.getTechType().whatResearches().getName().c_str());
+				if (DEBUG_StarcraftData) printf("\tPre: %s\n", action.getTechType().whatResearches().getName().c_str());
 
 				// add what researches it
 				pre.add(getAction(action.getTechType().whatResearches()));
@@ -223,7 +222,7 @@ class StarcraftData {
 		{
 			if (action.getUpgradeType().whatUpgrades() != BWAPI::UnitTypes::None)
 			{
-				if (DEBUG_StarcraftData) printf("\tPRE: %s\n", action.getUpgradeType().whatUpgrades().getName().c_str());
+				if (DEBUG_StarcraftData) printf("\tPre: %s\n", action.getUpgradeType().whatUpgrades().getName().c_str());
 
 				// add what upgrades it
 				pre.add(getAction(action.getUpgradeType().whatUpgrades()));
