@@ -221,11 +221,17 @@ class BuildingStats
 {
 public:
     vector<set<string>> sets;
+    vector<set<string>> our_sets;
+    vector<unsigned int> responses;
 	set <pair<int, int>, compare_by_statesize> sets_by_size;
 
 public:
     void readStatsFile(const string& filename);
+    void readOurStatsFile(const string& filename);
+    void readRepliesFile(const string& filename); // must be called after readOurStatsFile()
     int getClosestState(const set<string>& unitTypes);
     int getClosestState2(const set<string>& unitTypes);
     set<string>* decodeState(int state);
+    set<string>* decodeMyState(int state);
+    unsigned int getReplyState(const unsigned int state);
 };

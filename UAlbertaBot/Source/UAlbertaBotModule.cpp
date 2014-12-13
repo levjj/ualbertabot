@@ -12,6 +12,7 @@
 
 #include "Common.h"
 #include "UAlbertaBotModule.h"
+#include "guicon.h"
 
 
 BWAPI::AIModule * __NewAIModule()
@@ -24,7 +25,8 @@ UAlbertaBotModule::~UAlbertaBotModule() {}
 
 void UAlbertaBotModule::onStart()
 {
-	//BWAPI::Broodwar->setLocalSpeed(0); // Just type 0 in game will do the same thing
+    RedirectIOToConsole();
+    //BWAPI::Broodwar->setLocalSpeed(0); // Just type 0 in game will do the same thing
 
 	BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput);
 	//BWAPI::Broodwar->enableFlag(BWAPI::Flag::CompleteMapInformation);

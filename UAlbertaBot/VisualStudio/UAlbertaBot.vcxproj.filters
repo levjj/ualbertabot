@@ -168,6 +168,9 @@
     <ClCompile Include="..\..\hmm\src\tables.cpp">
       <Filter>hmm</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\guicon.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -301,6 +304,9 @@
     </ClInclude>
     <ClInclude Include="..\..\hmm\src\tables.h">
       <Filter>hmm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\guicon.h">
+      <Filter>module</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

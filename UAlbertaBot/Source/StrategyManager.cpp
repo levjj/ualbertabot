@@ -179,10 +179,11 @@ void StrategyManager::setStrategy()
 	}
 	else
 	{
-        BWAPI::Broodwar->printf("Setting strategy to ProtossZealotRush");
         // otherwise return a random strategy
+        BWAPI::Broodwar->printf("Setting strategy to ProtossZealotRush");
         currentStrategy = ProtossZealotRush;
-        currentStrategy = ProtossDragoons;
+        //BWAPI::Broodwar->printf("Setting strategy to ProtossDragoons");
+        //currentStrategy = ProtossDragoons;
     }
 
 }

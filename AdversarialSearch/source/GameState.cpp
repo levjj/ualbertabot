@@ -200,7 +200,8 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
 
 		if (unit.previousMoveTime() == _currentTime && _currentTime != 0)
 		{
-			printf("ERROR: Previous Move: %s\n", unit.previousMove().moveString().c_str());
+			// CHANGED
+            // printf("ERROR: Previous Move: %s\n", unit.previousMove().moveString().c_str());
 			int a = 6;
 		}
 

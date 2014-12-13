@@ -9,11 +9,13 @@ InformationManager::InformationManager()
 	: goForIt(false)
 	, map(BWAPI::Broodwar)
 	, lastFrameRegroup(false)
-	, steps(0)
+    , current_enemy_state(0)
+    , predicted_enemy_state(0)
+    , reply_state(0)
+//	, steps(0)
 {
 	initializeRegionInformation();
 
-    current_enemy_state = predicted_enemy_state = 0;
     enemy_race = BWAPI::Broodwar->enemy()->getRace().getName().c_str()[0];
     if (enemy_race != 'U') // we know the race, so load the HMM data now
         loadHMMdata(enemy_race);
@@ -50,19 +52,34 @@ std::map<string, string> readNamesFromStatsFile(string filename) {
     return names;
 }
 
-void InformationManager::loadHMMdata(char race_c) {
+void InformationManager::loadHMMdata(char enemy_race) {
     // load HMM
     string race = " ";
-    race[0] = race_c;
+    race[0] = enemy_race;
     hmm.loadFromRace(race);
 
     // load states file
     string file = "?/stats.csv";
-    file[0] = race_c;
+    file[0] = enemy_race;
     stats.readStatsFile(file);
+
+    // load the state data for our race
+    char our_race = BWAPI::Broodwar->self()->getRace().getName()[0];
+    printf("InformationManager: our race is %s\n", BWAPI::Broodwar->self()->getRace().c_str());
+    string file2 = "?/stats.csv";
+    file2[0] = our_race;
+    stats.readOurStatsFile(file2);
+
+    // load response file
+    string respfile = "?/replies.csv";
+    respfile[0] = enemy_race;
+    stats.readRepliesFile(respfile); // must be called after readOurStatsFile()
 }
 
 void InformationManager::updateHMM() {
+    if (current_enemy_state)
+        BWAPI::Broodwar->drawTextScreen(205, 344, "closest %d predicted %d reply %d", current_enemy_state, predicted_enemy_state, reply_state); // update info on HUD
+
     char race_c = BWAPI::Broodwar->enemy()->getRace().getName()[0];
     if (race_c == 'U') // if we don't know race yet, return
         return;
@@ -72,12 +89,18 @@ void InformationManager::updateHMM() {
 	if (enemy_race == 'U') { // Race changed from unknown to known, load all the data we need for that race
 		enemy_race = race_c;
 		loadHMMdata(enemy_race);
-		for (int i = 0; i < frameCount / 300; ++i) // catch up observations, observe once for each 300 frames
+        int frames_to_skip = frameCount / 300;
+        if (frameCount % 300 == 0) // we will fall through and update this frame below
+            --frames_to_skip;
+        for (int i = 0; i < frames_to_skip; ++i) // catch up observations, observe once for each 300 frames
 			hmm.observe(1);
 	}
 
-	set<string> target;
+    if (frameCount % 300) // We only go past here every 300 frames
+        return;
 
+    // build a list of buildings and units for enemy (to find the closest state)
+    set<string> target;
     BOOST_FOREACH(BWAPI::UnitType t, BWAPI::UnitTypes::allUnitTypes()) {
         int numUnits = enemyUnitData.getNumUnits(t);
 
@@ -184,15 +207,34 @@ void InformationManager::updateHMM() {
     }
     unsigned int state = stats.getClosestState(target);
     hmm.observe(state);
-    unsigned int predicted_state = hmm.predictMax(3); // predict enemy future state
-    current_enemy_state = state;
-    predicted_enemy_state = predicted_state;
-	string msg;
-	set<string> *prediction = stats.decodeState(predicted_state);
-	for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
-		msg += (*it) + ",";
-	}
-    BWAPI::Broodwar->printf("InformationManager: predicting %d (%s)", predicted_enemy_state, msg.c_str());
+
+    if (state != current_enemy_state) { // only do when enemy state changes
+        current_enemy_state = state;
+        predicted_enemy_state = hmm.predictMax(3); // predict enemy future state
+        reply_state = stats.getReplyState(predicted_enemy_state);
+
+        string msg;
+        set<string> *prediction;
+        prediction = stats.decodeState(current_enemy_state);
+        for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
+            msg += (*it) + ",";
+        }
+        printf("\nInformationManager: enemy state %d (%s)\n", state, msg.c_str());
+
+        msg = "";
+        prediction = stats.decodeState(predicted_enemy_state);
+        for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
+            msg += (*it) + ",";
+        }
+        printf("InformationManager: predicting %d (%s)\n", predicted_enemy_state, msg.c_str());
+
+        msg = "";
+        prediction = stats.decodeMyState(reply_state);
+        for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
+            msg += (*it) + ",";
+        }
+        printf("InformationManager: reply state %d (%s)\n", reply_state, msg.c_str());
+    }
 }
 
 void InformationManager::update()
@@ -203,12 +245,13 @@ void InformationManager::update()
 	map.setBuildingData(BWAPI::Broodwar);
 
 	// we might miss a few frames
-	int currSteps = BWAPI::Broodwar->getFrameCount() / 300;
-	while (steps < currSteps) {
+//	unsigned int currSteps = BWAPI::Broodwar->getFrameCount() / 300;
+//	while (steps < currSteps) {
 		// so update HMM as many times as needed to be up-to-date (hopefully just once)
 		updateHMM();
-		steps++;
-	}
+//		steps++;
+//	}
+
 }
 
 void InformationManager::updateUnitInfo() 

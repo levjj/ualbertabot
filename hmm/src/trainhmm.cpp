@@ -105,8 +105,11 @@ void testBuildingStats() {
 	hmm.loadFromRace("P");
 	BuildingStats stats;
 
-	stats.readStatsFile("P/stats.csv");
-	set<string> search;
+    stats.readStatsFile("P/stats.csv");
+    stats.readOurStatsFile("P/stats.csv");
+    stats.readRepliesFile("P/replies.csv");
+    int rep_state = stats.getReplyState(11);
+    set<string> search;
     search.insert("Reaver");
     search.insert("Observer");
     int state = stats.getClosestState(search);
@@ -126,17 +129,17 @@ void testBuildingStats() {
 
 int main(int argc, char* argv[])
 {
-	if (argc == 1) {
+	//if (argc == 1) {
 		testBuildingStats();
-	}
-	else if (argc == 3) {
-		testhmm(argv[1], atoi(argv[2]));
-	}
-	else {
-		system("time /t");
-		trainhmm(argv[1], 48, 256);
-		system("time /t");
-	}
+	//}
+	//else if (argc == 3) {
+	//	testhmm(argv[1], atoi(argv[2]));
+	//}
+	//else {
+	//	system("time /t");
+	//	trainhmm(argv[1], 48, 256);
+	//	system("time /t");
+	//}
 
     system("pause");
 }
