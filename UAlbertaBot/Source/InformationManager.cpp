@@ -203,7 +203,7 @@ void InformationManager::update()
 	map.setBuildingData(BWAPI::Broodwar);
 
 	// we might miss a few frames
-	int currSteps = BWAPI::Broodwar->getFrameCount() / 300;
+	unsigned int currSteps = BWAPI::Broodwar->getFrameCount() / 300;
 	while (steps < currSteps) {
 		// so update HMM as many times as needed to be up-to-date (hopefully just once)
 		updateHMM();
