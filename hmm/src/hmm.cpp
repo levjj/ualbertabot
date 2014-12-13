@@ -730,6 +730,6 @@ int BuildingStats::getClosestState2(const set<string>& unitTypes) {
 
 // for a given state, returns the reply state
 unsigned int BuildingStats::getReplyState(const unsigned int state) {
-    return responses[state-1];
+    return responses[state];
 }
 

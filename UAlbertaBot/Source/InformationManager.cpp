@@ -19,13 +19,6 @@ InformationManager::InformationManager()
     enemy_race = BWAPI::Broodwar->enemy()->getRace().getName().c_str()[0];
     if (enemy_race != 'U') // we know the race, so load the HMM data now
         loadHMMdata(enemy_race);
-
-    // load the state data for our race
-    char our_race = BWAPI::Broodwar->self()->getRace().getName()[0];
-    printf("InformationManager: our race is %s\n", BWAPI::Broodwar->self()->getRace().c_str());
-    string file = "?/stats.csv";
-    file[0] = our_race;
-    stats.readOurStatsFile(file);
 }
 
 // get an instance of this
@@ -70,10 +63,17 @@ void InformationManager::loadHMMdata(char enemy_race) {
     file[0] = enemy_race;
     stats.readStatsFile(file);
 
+    // load the state data for our race
+    char our_race = BWAPI::Broodwar->self()->getRace().getName()[0];
+    printf("InformationManager: our race is %s\n", BWAPI::Broodwar->self()->getRace().c_str());
+    string file2 = "?/stats.csv";
+    file2[0] = our_race;
+    stats.readOurStatsFile(file2);
+
     // load response file
     string respfile = "?/replies.csv";
     respfile[0] = enemy_race;
-    stats.readRepliesFile(respfile); // must be called after readOurStatsFile (in constructor)
+    stats.readRepliesFile(respfile); // must be called after readOurStatsFile()
 }
 
 void InformationManager::updateHMM() {
