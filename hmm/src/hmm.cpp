@@ -453,6 +453,20 @@ void Hmm::genSeq(vector<unsigned long>& seq)
   }
 }
 
+void PseudoCounts::print(Str2IdMap& str2id) {
+    cerr << "TRANSITION" << endl;
+    _transCount.save(cerr, str2id);
+    cerr << "*********************" << endl;
+    cerr << "EMISSION" << endl;
+    _emitCount.save(cerr, str2id);
+    cerr << "*********************" << endl;
+    cerr << "STATE" << endl;
+    _stateCount.save(cerr, str2id);
+    cerr << "*********************" << endl;
+    cerr << "INIT-PROBS" << endl;
+}
+
+// ADDED
 // Returns the number of observations in the stats.csv file
 int Hmm::numObservations(string race) {
 	ifstream stats((race + "/stats.csv").c_str());
@@ -581,20 +595,6 @@ unsigned long Hmm::predictMax(unsigned int t) {
 	return pred;
 }
 
-void PseudoCounts::print(Str2IdMap& str2id)
-{
-  cerr << "TRANSITION"<<endl;
-  _transCount.save(cerr, str2id);
-  cerr << "*********************" << endl;
-  cerr << "EMISSION"<<endl;
-  _emitCount.save(cerr, str2id);
-  cerr << "*********************" << endl;
-  cerr << "STATE"<<endl;
-  _stateCount.save(cerr, str2id);
-  cerr << "*********************" << endl;
-  cerr << "INIT-PROBS"<<endl;
-}
-
 void BuildingStats::readStatsFile(const string& filename) {
     sets.clear();
     ifstream infile(filename.c_str());
@@ -605,8 +605,8 @@ void BuildingStats::readStatsFile(const string& filename) {
             size_t start = line.find('[');
             size_t end = line.find(']');
             if (end == start + 1) {
-				sets_by_size.insert(pair<int, int>(sets.size(), buildings.size()));
-				sets.push_back(buildings);
+                sets_by_size.insert(pair<int, int>(sets.size(), buildings.size()));
+                sets.push_back(buildings);
                 continue;
             }
             line = line.substr(start + 1, end - start - 1);
@@ -617,8 +617,66 @@ void BuildingStats::readStatsFile(const string& filename) {
                 buildings.insert(building);
                 line = line.substr(end + 1);
             } while (line.find(',') != string::npos);
-			sets_by_size.insert(pair<int, int>(sets.size(), buildings.size()));
-			sets.push_back(buildings);
+            sets_by_size.insert(pair<int, int>(sets.size(), buildings.size()));
+            sets.push_back(buildings);
+        }
+        infile.close();
+    }
+}
+
+void BuildingStats::readOurStatsFile(const string& filename) {
+    our_sets.clear();
+    ifstream infile(filename.c_str());
+    string line;
+    if (infile.is_open()) {
+        while (getline(infile, line)) {
+            set<string> buildings;
+            size_t start = line.find('[');
+            size_t end = line.find(']');
+            if (end == start + 1) {
+                our_sets.push_back(buildings);
+                continue;
+            }
+            line = line.substr(start + 1, end - start - 1);
+            do {
+                start = line.find('\'');
+                end = line.find('\'', start + 1);
+                string building = line.substr(start + 1, end - start - 1);
+                buildings.insert(building);
+                line = line.substr(end + 1);
+            } while (line.find(',') != string::npos);
+            our_sets.push_back(buildings);
+        }
+        infile.close();
+    }
+}
+
+// read reply file: for each state, a response state
+void BuildingStats::readRepliesFile(const string& filename) {
+    unsigned int max_state = our_sets.size();
+    responses.clear();
+    responses.resize(max_state+1);
+
+    ifstream infile(filename.c_str());
+    string line;
+    if (infile.is_open()) {
+        while (getline(infile, line)) {
+            size_t start = line.find(',');
+            string state_s = line.substr(0, start);
+            string response = line.substr(start + 1);
+            stringstream ss,ss2;
+            ss << response;
+            unsigned int reply;
+            ss >> reply;
+            ss2 << state_s;
+            unsigned int state;
+            ss2 >> state;
+            if (reply > max_state)
+                printf("Error, reply state is %d\n", reply);
+            if (state > max_state)
+                printf("Error, state is %d\n", state);
+            else
+                responses[state] = reply;
         }
         infile.close();
     }
@@ -639,7 +697,11 @@ int BuildingStats::getClosestState(const set<string>& unitTypes) {
 
 // returns the closest state number given a set of buildings
 set<string>* BuildingStats::decodeState(int state) {
-	return &sets[state - 1];
+    return &sets[state - 1];
+}
+
+set<string>* BuildingStats::decodeMyState(int state) {
+    return &our_sets[state - 1];
 }
 
 int BuildingStats::getClosestState2(const set<string>& unitTypes) {
@@ -665,3 +727,9 @@ int BuildingStats::getClosestState2(const set<string>& unitTypes) {
         }
     return smallest_state_index + 1;
 }
+
+// for a given state, returns the reply state
+unsigned int BuildingStats::getReplyState(const unsigned int state) {
+    return responses[state-1];
+}
+
