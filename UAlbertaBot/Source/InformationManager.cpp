@@ -740,3 +740,13 @@ bool InformationManager::replyStateHasDarkTemplar() {
     return false;
 }
 
+bool InformationManager::replyStateHasScouts() {
+    set<string> * prediction;
+    prediction = stats.decodeMyState(reply_state);
+    for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
+        string unit = (*it);
+        if (unit.find("Scout") != string::npos) return true;
+    }
+    return false;
+}
+

@@ -109,6 +109,7 @@ public:
     bool						replyStateHasZealots();
     bool						replyStateHasDragoons();
     bool						replyStateHasDarkTemplar();
+    bool						replyStateHasScouts();
 };
 
 
