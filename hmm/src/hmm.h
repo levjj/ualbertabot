@@ -222,7 +222,7 @@ class BuildingStats
 public:
     vector<set<string>> sets;
     vector<set<string>> our_sets;
-    vector<unsigned int> responses;
+    vector<int> responses;
 	set <pair<int, int>, compare_by_statesize> sets_by_size;
 
 public:
@@ -233,5 +233,5 @@ public:
     int getClosestState2(const set<string>& unitTypes);
     set<string>* decodeState(int state);
     set<string>* decodeMyState(int state);
-    unsigned int getReplyState(const unsigned int state);
+    int getReplyState(const int state);
 };

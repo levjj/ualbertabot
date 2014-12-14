@@ -655,7 +655,7 @@ void BuildingStats::readOurStatsFile(const string& filename) {
 void BuildingStats::readRepliesFile(const string& filename) {
     unsigned int max_state = our_sets.size();
     responses.clear();
-    responses.resize(max_state+1);
+    responses.resize(max_state);
 
     ifstream infile(filename.c_str());
     string line;
@@ -671,12 +671,12 @@ void BuildingStats::readRepliesFile(const string& filename) {
             ss2 << state_s;
             unsigned int state;
             ss2 >> state;
-            if (reply > max_state)
+            if (reply >= max_state)
                 printf("Error, reply state is %d\n", reply);
-            if (state > max_state)
+            if (state >= max_state)
                 printf("Error, state is %d\n", state);
             else
-                responses[state] = reply;
+                responses[state-1] = reply;
         }
         infile.close();
     }
@@ -729,7 +729,7 @@ int BuildingStats::getClosestState2(const set<string>& unitTypes) {
 }
 
 // for a given state, returns the reply state
-unsigned int BuildingStats::getReplyState(const unsigned int state) {
-    return responses[state];
+int BuildingStats::getReplyState(const int state) {
+    return responses[state - 1];
 }
 
