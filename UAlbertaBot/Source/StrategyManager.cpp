@@ -709,10 +709,20 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
      int numNexusCompleted = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
      int numNexusAll = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
      int numCyber = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Cybernetics_Core);
+     int numScouts = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Scout);
 
      bool build_zealots = InformationManager::Instance().replyStateHasZealots();
      bool build_dragoons = InformationManager::Instance().replyStateHasDragoons();
      bool build_DT = InformationManager::Instance().replyStateHasDarkTemplar();
+     bool build_scouts = InformationManager::Instance().replyStateHasScouts();
+
+     if (InformationManager::Instance().enemyWillHaveAirUnits()) { // if they will have air, dont build zealots or DT
+         printf("Enemy predicted to have air units\n");
+         build_zealots = build_DT = false;
+     }
+     if (!build_dragoons && !build_zealots && !build_DT && !build_scouts) { // if we dont have any of these, build zealots by default
+         build_zealots = true;
+     }
 
      printf("We want to build ");
      if (build_zealots)
@@ -720,23 +730,17 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
      if (build_dragoons)
          printf("Dragoons, ");
      if (build_DT)
-         printf("Dark Templar");
+         printf("Dark Templar, ");
+     if (build_scouts)
+         printf("Scouts");
      printf("\n");
-
-     if (InformationManager::Instance().enemyWillHaveAirUnits()) { // if they will have air, only build dragoons
-         printf("Enemy predicted to have air units\n");
-         build_zealots = build_DT = false;
-         build_dragoons = true;
-     }
-     if (!build_dragoons && !build_zealots && !build_DT) { // if we dont have any of these, build zealots by default
-         build_zealots = true;
-     }
 
      int darkTemplarWanted = 0;
      int zealotsWanted = 0;
      int dragoonsWanted = 0;
-     int gatewayWanted = 3;
+     int gatewayWanted = 2;
      int probesWanted = 0;
+     int scoutsWanted = 0;
 
      if (InformationManager::Instance().enemyWillHaveCloakedUnits())
          printf("Enemy predicted to have cloaked units\n");
@@ -749,7 +753,7 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
              goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
      }
 
-     if (numNexusAll >= 2 || BWAPI::Broodwar->getFrameCount() > 9000) {
+     if ((numNexusAll >= 2 || BWAPI::Broodwar->getFrameCount() > 9000) && !scoutsWanted && !darkTemplarWanted) {
          gatewayWanted = 6;
          goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Assimilator, 1));
      }
@@ -758,13 +762,16 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
          zealotsWanted = numZealots + 8;
      }
 
-     if (build_dragoons) { // we want more dragoons, and upgrade them
+     if (build_dragoons) { // we want more dragoons
          dragoonsWanted = numDragoons > 0 ? numDragoons + 6 : 2;
-         goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Cybernetics_Core, 1));
      }
 
-     if (numDragoons > 2) // upgrade dragoons
+     if (numDragoons > 4) // upgrade dragoons if we have been building them
          goal.push_back(MetaPair(BWAPI::UpgradeTypes::Singularity_Charge, 1));
+
+     if (build_scouts) { // we want more scouts
+         scoutsWanted = numScouts > 0 ? numScouts + 6 : 2;
+     }
 
      if (build_DT) { // we want dark templar
          darkTemplarWanted = numDarkTeplar > 0 ? numDarkTeplar + 6 : 2;
@@ -774,16 +781,17 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
          probesWanted = 18 - numProbes;
      }
 
-     if (numNexusAll > 1) { // 10 probes per additional Nexus
-         probesWanted = 18 + 10 * (numNexusAll-1) - numProbes;
+     if (numNexusAll > 1) { // 15 probes per additional Nexus
+         probesWanted = 18 + 15 * (numNexusAll-1) - numProbes;
      }
 
      if (expandProtossCustom()) { // expand?
          goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
      }
 
-     goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, dragoonsWanted));
      goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, zealotsWanted));
+     goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, dragoonsWanted));
+     goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Scout, scoutsWanted));
      goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Gateway, gatewayWanted));
      goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dark_Templar, darkTemplarWanted));
      goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Probe, std::min(90, probesWanted)));
