@@ -222,7 +222,7 @@ class BuildingStats
 public:
     vector<set<string>> sets;
     vector<set<string>> our_sets;
-    vector<unsigned int> responses;
+    vector<int> responses;
 	set <pair<int, int>, compare_by_statesize> sets_by_size;
 
 public:

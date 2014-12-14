@@ -43,9 +43,9 @@ class InformationManager {
 //	unsigned long                       steps;
     Hmm                                 hmm;
     BuildingStats                       stats;
-    unsigned long                       current_enemy_state;
-    unsigned long                       predicted_enemy_state;
-    unsigned long                       reply_state;
+    int                                 current_enemy_state;
+    int                                 predicted_enemy_state;
+    int                                 reply_state;
     char                                enemy_race; // 'T', 'P', 'Z', or 'U'
 
     void                                updateHMM(void);

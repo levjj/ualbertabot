@@ -205,10 +205,10 @@ void InformationManager::updateHMM() {
             }
         }
     }
-    unsigned int state = stats.getClosestState(target);
+    int state = stats.getClosestState(target);
     hmm.observe(state);
 
-    unsigned int enemy_state = hmm.predictMax(3); // predict enemy future state
+    int enemy_state = hmm.predictMax(3); // predict enemy future state
 
     if (state == current_enemy_state && predicted_enemy_state == enemy_state)  // only proceed if enemy state or enemy state prediction changes
         return;
@@ -218,7 +218,7 @@ void InformationManager::updateHMM() {
     reply_state = stats.getReplyState(predicted_enemy_state);
 
     string msg;
-    set<string> *prediction;
+    set<string> * prediction;
     prediction = stats.decodeState(current_enemy_state);
     for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
         msg += (*it) + ",";
@@ -238,7 +238,6 @@ void InformationManager::updateHMM() {
         msg += (*it) + ",";
     }
     printf("InformationManager: reply state %d (%s)\n", reply_state, msg.c_str());
-
 }
 
 void InformationManager::update()
