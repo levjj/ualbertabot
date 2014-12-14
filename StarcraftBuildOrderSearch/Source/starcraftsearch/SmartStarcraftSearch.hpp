@@ -321,8 +321,8 @@ public:
 	void print()
 	{
 		//initialState.printData();
-		goal.printGoal();
-		printf("\n\n");
+		//goal.printGoal();
+		//printf("\n\n");
 	}
 	
 };

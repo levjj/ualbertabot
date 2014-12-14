@@ -414,7 +414,7 @@ public:
 		
 		if (minerals < 0 || gas < 0)
 		{
-			printf("Resource Error: m:%d g:%d\n", minerals, gas);
+			//printf("Resource Error: m:%d g:%d\n", minerals, gas);
 		}
 
 		// do race specific things here, like subtract a larva

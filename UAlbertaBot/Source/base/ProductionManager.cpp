@@ -89,9 +89,6 @@ void ProductionManager::update()
 // on unit destroy
 void ProductionManager::onUnitDestroy(BWAPI::Unit * unit)
 {
-	// ADDED, doesnt work well to research every time
-    return;
-    
     // we don't care if it's not our unit
 	if (!unit || unit->getPlayer() != BWAPI::Broodwar->self())
 	{
@@ -99,7 +96,7 @@ void ProductionManager::onUnitDestroy(BWAPI::Unit * unit)
 	}
 		
 	// if it's a worker or a building, we need to re-search for the current goal
-	if ((unit->getType().isWorker() && !WorkerManager::Instance().isWorkerScout(unit)) || unit->getType().isBuilding())
+	if (/*(unit->getType().isWorker() && !WorkerManager::Instance().isWorkerScout(unit)) ||*/ unit->getType().isBuilding())
 	{
 		BWAPI::Broodwar->printf("Critical unit died, re-searching build order");
 

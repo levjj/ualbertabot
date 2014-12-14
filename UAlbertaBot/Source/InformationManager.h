@@ -102,6 +102,13 @@ public:
 	void						drawUnitInformation(int x, int y);
 
 	MicroSearch::Map *			getMap() { return &map; }
+
+    //ADDED
+    bool						enemyWillHaveCloakedUnits();
+    bool						enemyWillHaveAirUnits();
+    bool						replyStateHasZealots();
+    bool						replyStateHasDragoons();
+    bool						replyStateHasDarkTemplar();
 };
 
 
