@@ -753,7 +753,7 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
              goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
      }
 
-     if (numNexusAll >= 2 || BWAPI::Broodwar->getFrameCount() > 9000) {
+     if ((numNexusAll >= 2 || BWAPI::Broodwar->getFrameCount() > 9000) && !scoutsWanted && !darkTemplarWanted) {
          gatewayWanted = 6;
          goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Assimilator, 1));
      }
@@ -766,12 +766,12 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
          dragoonsWanted = numDragoons > 0 ? numDragoons + 6 : 2;
      }
 
+     if (numDragoons > 4) // upgrade dragoons if we have been building them
+         goal.push_back(MetaPair(BWAPI::UpgradeTypes::Singularity_Charge, 1));
+
      if (build_scouts) { // we want more scouts
          scoutsWanted = numScouts > 0 ? numScouts + 6 : 2;
      }
-
-     if (numDragoons > 4) // upgrade dragoons if we have been building them
-         goal.push_back(MetaPair(BWAPI::UpgradeTypes::Singularity_Charge, 1));
 
      if (build_DT) { // we want dark templar
          darkTemplarWanted = numDarkTeplar > 0 ? numDarkTeplar + 6 : 2;
@@ -781,8 +781,8 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
          probesWanted = 18 - numProbes;
      }
 
-     if (numNexusAll > 1) { // 10 probes per additional Nexus
-         probesWanted = 18 + 10 * (numNexusAll-1) - numProbes;
+     if (numNexusAll > 1) { // 15 probes per additional Nexus
+         probesWanted = 18 + 15 * (numNexusAll-1) - numProbes;
      }
 
      if (expandProtossCustom()) { // expand?
