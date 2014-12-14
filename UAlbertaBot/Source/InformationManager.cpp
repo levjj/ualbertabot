@@ -680,3 +680,63 @@ bool InformationManager::tileContainsUnit(BWAPI::TilePosition tile)
 {
 	return map.canBuildHere(tile);
 }
+
+// ADDED
+bool InformationManager::enemyWillHaveCloakedUnits() {
+    set<string> * prediction;
+    prediction = stats.decodeState(predicted_enemy_state);
+    for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
+        string unit = (*it);
+        if (unit.find("Dark Templar") != string::npos) return true;
+        if (unit.find("Ghost") != string::npos) return true;
+        if (unit.find("Lurker") != string::npos) return true;
+    }
+    return false;
+}
+
+bool InformationManager::enemyWillHaveAirUnits() {
+    set<string> * prediction;
+    prediction = stats.decodeState(predicted_enemy_state);
+    for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
+        string unit = (*it);
+        if (unit.find("Scout") != string::npos) return true;
+        if (unit.find("Carrier") != string::npos) return true;
+        if (unit.find("Wraith") != string::npos) return true;
+        if (unit.find("Battlecruiser") != string::npos) return true;
+        if (unit.find("Valkyrie") != string::npos) return true;
+        if (unit.find("Mutalisk") != string::npos) return true;
+        if (unit.find("Guardian") != string::npos) return true;
+    }
+    return false;
+}
+
+bool InformationManager::replyStateHasZealots() {
+    set<string> * prediction;
+    prediction = stats.decodeMyState(reply_state);
+    for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
+        string unit = (*it);
+        if (unit.find("Zealot") != string::npos) return true;
+    }
+    return false;
+}
+
+bool InformationManager::replyStateHasDragoons() {
+    set<string> * prediction;
+    prediction = stats.decodeMyState(reply_state);
+    for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
+        string unit = (*it);
+        if (unit.find("Dragoon") != string::npos) return true;
+    }
+    return false;
+}
+
+bool InformationManager::replyStateHasDarkTemplar() {
+    set<string> * prediction;
+    prediction = stats.decodeMyState(reply_state);
+    for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
+        string unit = (*it);
+        if (unit.find("Dark Templar") != string::npos) return true;
+    }
+    return false;
+}
+
