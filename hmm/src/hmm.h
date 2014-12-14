@@ -233,5 +233,5 @@ public:
     int getClosestState2(const set<string>& unitTypes);
     set<string>* decodeState(int state);
     set<string>* decodeMyState(int state);
-    unsigned int getReplyState(const unsigned int state);
+    int getReplyState(const int state);
 };

@@ -105,9 +105,9 @@ void testBuildingStats() {
 	hmm.loadFromRace("P");
 	BuildingStats stats;
 
-    stats.readStatsFile("P/stats.csv");
+    stats.readStatsFile("T/stats.csv");
     stats.readOurStatsFile("P/stats.csv");
-    stats.readRepliesFile("P/replies.csv");
+    stats.readRepliesFile("T/replies.csv");
     int rep_state = stats.getReplyState(11);
     set<string> search;
     search.insert("Reaver");

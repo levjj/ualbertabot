@@ -208,33 +208,37 @@ void InformationManager::updateHMM() {
     unsigned int state = stats.getClosestState(target);
     hmm.observe(state);
 
-    if (state != current_enemy_state) { // only do when enemy state changes
-        current_enemy_state = state;
-        predicted_enemy_state = hmm.predictMax(3); // predict enemy future state
-        reply_state = stats.getReplyState(predicted_enemy_state);
+    unsigned int enemy_state = hmm.predictMax(3); // predict enemy future state
 
-        string msg;
-        set<string> *prediction;
-        prediction = stats.decodeState(current_enemy_state);
-        for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
-            msg += (*it) + ",";
-        }
-        printf("\nInformationManager: enemy state %d (%s)\n", state, msg.c_str());
+    if (state == current_enemy_state && predicted_enemy_state == enemy_state)  // only proceed if enemy state or enemy state prediction changes
+        return;
 
-        msg = "";
-        prediction = stats.decodeState(predicted_enemy_state);
-        for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
-            msg += (*it) + ",";
-        }
-        printf("InformationManager: predicting %d (%s)\n", predicted_enemy_state, msg.c_str());
+    current_enemy_state = state;
+    predicted_enemy_state = enemy_state;
+    reply_state = stats.getReplyState(predicted_enemy_state);
 
-        msg = "";
-        prediction = stats.decodeMyState(reply_state);
-        for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
-            msg += (*it) + ",";
-        }
-        printf("InformationManager: reply state %d (%s)\n", reply_state, msg.c_str());
+    string msg;
+    set<string> *prediction;
+    prediction = stats.decodeState(current_enemy_state);
+    for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
+        msg += (*it) + ",";
     }
+    printf("\nInformationManager: enemy state %d (%s)\n", state, msg.c_str());
+
+    msg = "";
+    prediction = stats.decodeState(predicted_enemy_state);
+    for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
+        msg += (*it) + ",";
+    }
+    printf("InformationManager: predicting %d (%s)\n", predicted_enemy_state, msg.c_str());
+
+    msg = "";
+    prediction = stats.decodeMyState(reply_state);
+    for (set<string>::iterator it = prediction->begin(); it != prediction->end(); ++it) {
+        msg += (*it) + ",";
+    }
+    printf("InformationManager: reply state %d (%s)\n", reply_state, msg.c_str());
+
 }
 
 void InformationManager::update()
