@@ -64,6 +64,35 @@ vector<unsigned long>* loadReplayData(string race, int idx) {
 	return result;
 }
 
+void testdata(string race, int numLines, int *trials, int *correct) {
+	Hmm hmm;
+	hmm.loadFromRace(race);
+
+	string filename = race + "/data.csv";
+	ifstream infile(filename.c_str());
+	string line;
+	for (int z = 0; z < numLines; z++) {
+		vector<unsigned long>* replay = loadReplayData(race, z);
+		for (unsigned int i = 0; i < replay->size(); i++) {
+			unsigned int missed = 0, j;
+			for (j = 0; j < i; j++) {
+				hmm.observe(replay->at(j));
+			}
+			vector<unsigned long> *seq = hmm.predictMaxSeq(10);
+			for (unsigned int k = j; k < replay->size() && k < j+10; k++) {
+				unsigned long prediction = seq->at(k - j);
+				if (prediction == replay->at(k)){
+					correct[k - j]++;
+				}
+				trials[k - j]++;
+			}
+			hmm.reset();
+			delete seq;
+		}
+		cerr << "Ran " << z << " from " << numLines << endl;
+	}
+}
+
 void testhmm(string race, int index)
 {
 	cout << "Testing with replay " << index << endl;
@@ -133,7 +162,21 @@ int main(int argc, char* argv[])
 		testBuildingStats();
 	}
 	else if (argc == 3) {
-		testhmm(argv[1], atoi(argv[2]));
+		if (argv[2][0] == '0') {
+			int trials[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+			int correct[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+			testdata("P", 100, &trials[0], &correct[0]);
+			testdata("T", 100, &trials[0], &correct[0]);
+			testdata("Z", 100, &trials[0], &correct[0]);
+			cout << "Steps;Trials;Correct;Accurary" << endl;
+			for (unsigned int p = 0; p < 10; p++) {
+				double acc = ((double)correct[p]) / ((double)trials[p]);
+				cout << (p + 1) << ";" << trials[p] << "; " << correct[p] << "; " << acc << endl;
+			}
+		}
+		else {
+			testhmm(argv[1], atoi(argv[2]));
+		}
 	}
 	else {
 		system("time /t");
