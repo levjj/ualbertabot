@@ -64,7 +64,7 @@ vector<unsigned long>* loadReplayData(string race, int idx) {
 	return result;
 }
 
-void testdata(string race, int numLines, int *trials, int *correct) {
+void testdata(string race, int numLines, int *trials, int *correct, int advance) {
 	Hmm hmm;
 	hmm.loadFromRace(race);
 
@@ -78,13 +78,13 @@ void testdata(string race, int numLines, int *trials, int *correct) {
 			for (j = 0; j < i; j++) {
 				hmm.observe(replay->at(j));
 			}
-			vector<unsigned long> *seq = hmm.predictMaxSeq(10);
-			for (unsigned int k = j; k < replay->size() && k < j+10; k++) {
+			vector<unsigned long> *seq = hmm.predictMaxSeq(advance);
+			for (unsigned int k = j - 1 + advance; k < replay->size() && k < j + advance; k++) {
 				unsigned long prediction = seq->at(k - j);
 				if (prediction == replay->at(k)){
-					correct[k - j]++;
+					correct[k]++;
 				}
-				trials[k - j]++;
+				trials[k]++;
 			}
 			hmm.reset();
 			delete seq;
@@ -162,14 +162,14 @@ int main(int argc, char* argv[])
 		testBuildingStats();
 	}
 	else if (argc == 3) {
-		if (argv[2][0] == '0') {
-			int trials[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-			int correct[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-			testdata("P", 100, &trials[0], &correct[0]);
-			testdata("T", 100, &trials[0], &correct[0]);
-			testdata("Z", 100, &trials[0], &correct[0]);
+		if (argv[1][0] == 'A') {
+			int* trials = (int*)calloc(sizeof(int), 8000);
+			int* correct = (int*)calloc(sizeof(int), 8000);
+			testdata("P", 100, trials, correct, atoi(argv[2]));
+			testdata("T", 100, trials, correct, atoi(argv[2]));
+			testdata("Z", 100, trials, correct, atoi(argv[2]));
 			cout << "Steps;Trials;Correct;Accurary" << endl;
-			for (unsigned int p = 0; p < 10; p++) {
+			for (unsigned int p = 0; p < 8000; p++) {
 				double acc = ((double)correct[p]) / ((double)trials[p]);
 				cout << (p + 1) << ";" << trials[p] << "; " << correct[p] << "; " << acc << endl;
 			}
